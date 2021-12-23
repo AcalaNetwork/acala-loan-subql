@@ -1,0 +1,127 @@
+type Account @entity {
+  id: ID! # user address
+  address: String
+  positions: [LoanPosition] @derivedFrom(field: "owner")
+  hourLoanPositions: [HourLoanPosition] @derivedFrom(field: "owner")
+  dailyLoanPositions: [DailyLoanPosition] @derivedFrom(field: "owner")
+}
+
+type Collateral @entity {
+  id: ID! # token name
+  decimal: Int
+  token: String
+  positions: [LoanPosition] @derivedFrom(field: "collateral")
+}
+
+type LoanPosition @entity {
+  id: ID! # `${ownerId}-${tokenname}`
+  owner: Account
+  collateral: Collateral
+  debitAmount: BigInt
+  collateralAmount: BigInt
+}
+
+type HourLoanPosition @entity {
+  id: ID! # `${ownerId}-${tokenname}-${YYYY-MM-DD-dd-hh}`
+  owner: Account
+  collateral: Collateral
+  debitAmount: BigInt
+  collateralAmount: BigInt
+  debitExchangeRate: BigInt
+  timestamp: Date
+}
+
+type DailyLoanPosition @entity {
+  id: ID! # `${ownerId}-${tokenname}-${YYYY-MM-DD-dd}`
+  owner: Account
+  collateral: Collateral
+  debitAmount: BigInt
+  collateralAmount: BigInt
+  debitExchangeRate: BigInt
+  timestamp: Date
+}
+
+type GlobalPosition @entity {
+  id: ID! # tokenname
+  collateral: Collateral
+  debitAmount: BigInt
+  collateralAmount: BigInt
+}
+
+type HourGlobalPosition @entity {
+  id: ID! # `${tokenname}-${YYYY-MM-DD-dd}`
+  collateral: Collateral
+  debitAmount: BigInt
+  collateralAmount: BigInt
+  debitExchangeRate: BigInt
+  timestamp: Date
+  txCount: BigInt
+  debitVolume: BigInt
+  collateralVolume: BigInt
+}
+
+type DailyGlobalPosition @entity {
+  id: ID! # `${tokenname}-${YYYY-MM-DD-dd}`
+  collateral: Collateral
+  debitAmount: BigInt
+  collateralAmount: BigInt
+  debitExchangeRate: BigInt
+  timestamp: Date
+  txCount: BigInt
+  debitVolume: BigInt
+  collateralVolume: BigInt
+}
+
+type ExchangeRate @entity {
+  id: ID! # `${block-height}-${tokenname}`
+  block: BigInt
+  collateral: Collateral
+  debitExchangeRate: BigInt
+}
+
+type LoanHistory @entity {
+  id: ID! # `extrinshcHash`-`event idx`
+  owner: Account
+  collateral: Collateral
+  type: String # event name
+
+  atBlock: BigInt
+  atBlockHash: String
+  atExtrinsicHash: String
+  timestamp: Date
+  
+  # loanupdated 
+  collateralAjustment: BigInt
+  debitAjustment: BigInt
+
+  # closeCDPinDebitByDEX
+  soldCollateralAmount: BigInt
+  refundCollateralAmount: BigInt
+  debitValue: BigInt
+
+  # liquidUnsafeCDP
+  collateralAmount: BigInt
+  badDebitValue: BigInt
+  liquidationStrategy: String
+}
+
+type CollateralParams @entity {
+  id: ID! # `tokenname`
+  collateral: Collateral
+  maximumTotalDebitValue: BigInt
+  interestRatePerSec: BigInt
+  liquidationRatio: BigInt
+  liquidationPenalty: BigInt
+  requiredCollateralRatio: BigInt
+}
+
+type CollateralParamsHistory @entity {
+  id: ID! # `${block}-${tokenname}`
+  endAtBlock: BigInt
+  collateral: Collateral
+  maximumTotalDebitValue: BigInt
+  interestRatePerSec: BigInt
+  liquidationRatio: BigInt
+  liquidationPenalty: BigInt
+  requiredCollateralRatio: BigInt
+}
