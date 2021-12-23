@@ -47,7 +47,7 @@ export const updateParams = async (event: SubstrateEvent, module: 'cdp' | 'loans
     const field = fieldMap.get(method);
     if(!field) return;
   
-    const newParams = await getCollateralParamsHistory(`${height}-${tokenName}-${field}`);
+    const newParams = await getCollateralParamsHistory(`${height}-${tokenName}`);
     newParams.endAtBlock = BigInt(height);
     newParams.collateralId = record.record.collateralId;
     newParams.maximumTotalDebitValue = record.record.maximumTotalDebitValue;
