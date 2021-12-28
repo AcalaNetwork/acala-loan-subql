@@ -2,7 +2,7 @@ import { forceToCurrencyIdName } from "@acala-network/sdk-core";
 import { SubstrateEvent } from "@subql/types"
 import { getDateStartOfDay, getDateStartOfHour } from '../utils/date';
 import { getAccount, getCollateral, getDailyGlobalPosition, getDailyLoanPosition, getGlobalLoanPosition, getHourGolbalPosition, getHourLoanPosition, getLoanHistory, getLoanPosition } from "../utils/record";
-import { getExchangeRateFromDb } from "../utils";
+import { getExchangeRateFromDb, getKVData, mapUpdateKVData } from "../utils";
 import { updateParams } from "./params";
 
 export const updateLoanPosition = async (event: SubstrateEvent, isLiquidatiton = false) => {
@@ -99,6 +99,14 @@ export const updateLoanPosition = async (event: SubstrateEvent, isLiquidatiton =
   history.atBlockHash = event.block.block.hash.toString();
   history.atExtrinsicHash = event.extrinsic.extrinsic.hash.toString();
   history.timestamp = event.block.timestamp;
+
+  const keyArray = [
+    { key: 'owner' },
+    { key: 'collateral' },
+    { key: 'collateralAdjustment'},
+    { key: 'debitAdjustment' }
+  ];
+  history.data = mapUpdateKVData(getKVData(event.event.data), keyArray)
 
   await position.save();
   await globalPosition.save();

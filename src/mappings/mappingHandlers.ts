@@ -2,6 +2,7 @@ import { forceToCurrencyIdName } from "@acala-network/sdk-core";
 import { SubstrateEvent } from "@subql/types";
 import { updateLoanPosition } from "../handlers";
 import { updateParams } from "../handlers/params";
+import { getKVData, mapUpdateKVData } from "../utils";
 import { getLoanHistory } from "../utils/record";
 
 export async function handlePositionUpdated(event: SubstrateEvent): Promise<void> {
@@ -32,13 +33,19 @@ export async function handleLiquidateUnsafeCDP(event: SubstrateEvent): Promise<v
 	history.ownerId = owner;
 	history.collateralId = token;
 	history.type = event.event.method.toString();
-	history.collateralAmount = BigInt(collateral_amount.toString());
-	history.badDebitValue = BigInt(bad_debt_value.toString());
-	history.liquidationStrategy = liquidation_strategy.toString();
 	history.atBlock = BigInt(event.block.block.header.number.toString());
 	history.atBlockHash = event.block.block.hash.toString();
 	history.atExtrinsicHash = event.extrinsic.extrinsic.hash.toString();
 	history.timestamp = event.block.timestamp;
+
+	const keyArray = [
+		{ key: 'collateral' },
+		{ key: 'owner' },
+		{ key: 'collateralAdjustment'},
+		{ key: 'debitAdjustment' },
+		{ key: 'liquidationStrategy' }
+	];
+	history.data = mapUpdateKVData(getKVData(event.event.data), keyArray);
 
 	await history.save()
 }
@@ -62,6 +69,15 @@ export async function handleCloseCDPInDebitByDEX(event: SubstrateEvent): Promise
 	history.atBlockHash = event.block.block.hash.toString();
 	history.atExtrinsicHash = event.extrinsic.extrinsic.hash.toString();
 	history.timestamp = event.block.timestamp;
+
+	const keyArray = [
+		{ key: 'collateral' },
+		{ key: 'owner' },
+		{ key: 'soldCollateralAdjustment'},
+		{ key: 'refundCollateralAdjustment' },
+		{ key: 'debitValue' }
+	];
+	history.data = mapUpdateKVData(getKVData(event.event.data), keyArray);
 
 	await history.save()
 }

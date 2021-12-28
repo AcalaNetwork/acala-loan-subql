@@ -1,3 +1,9 @@
+type KVData @jsonField {
+  key: String
+  value: String
+  type: String
+}
+
 type Account @entity {
   id: ID! # user address
   address: String
@@ -84,11 +90,14 @@ type LoanHistory @entity {
   owner: Account
   collateral: Collateral
   type: String # event name
+  subType: String
 
   atBlock: BigInt
   atBlockHash: String
   atExtrinsicHash: String
   timestamp: Date
+
+  data: [KVData]
   
   # loanupdated 
   collateralAjustment: BigInt

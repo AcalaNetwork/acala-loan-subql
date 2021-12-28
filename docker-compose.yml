@@ -26,7 +26,7 @@ services:
     command:
       - --local
       - --subquery=/app
-      - --subquery-name=acala-loans
+      - --schema=acala-loans
 
   graphql-engine:
     image: onfinality/subql-query:latest

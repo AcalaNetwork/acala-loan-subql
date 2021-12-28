@@ -174,6 +174,8 @@ export const getLoanHistory = async (id: string) => {
     const newRecord = new LoanHistory(id);
 
     newRecord.ownerId = '';
+    newRecord.type = '';
+    newRecord.subType = '';
     newRecord.collateralId = '';
     newRecord.atBlock = BigInt(0);
     newRecord.atBlockHash = '';
@@ -188,6 +190,8 @@ export const getLoanHistory = async (id: string) => {
     newRecord.collateralAmount = BigInt(0);
     newRecord.badDebitValue = BigInt(0);
     newRecord.liquidationStrategy = '';
+
+    newRecord.data = [];
 
     return newRecord;
   } else {

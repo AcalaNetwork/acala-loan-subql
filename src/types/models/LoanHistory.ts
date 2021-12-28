@@ -2,6 +2,10 @@
 import {Entity, FunctionPropertyNames} from "@subql/types";
 import assert from 'assert';
 
+import {
+    KVData,
+} from '../interfaces'
+
 
 
 
@@ -20,6 +24,8 @@ export class LoanHistory implements Entity {
 
     public type?: string;
 
+    public subType?: string;
+
     public atBlock?: bigint;
 
     public atBlockHash?: string;
@@ -27,6 +33,8 @@ export class LoanHistory implements Entity {
     public atExtrinsicHash?: string;
 
     public timestamp?: Date;
+
+    public data?: KVData[];
 
     public collateralAjustment?: bigint;
 

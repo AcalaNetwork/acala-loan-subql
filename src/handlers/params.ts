@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { forceToCurrencyIdName } from "@acala-network/sdk-core";
 import { SubstrateEvent } from "@subql/types";
 import { getCollateral, getCollateralParams, getCollateralParamsHistory } from "../utils/record";
@@ -30,6 +28,8 @@ export const updateParams = async (event: SubstrateEvent, module: 'cdp' | 'loans
   await getCollateral(tokenName);
   const record = await getCollateralParams(tokenName);
 
+  const globalInterestRatePerSec = await api.query.cdpEngine.globalInterestRatePerSec();
+
   if (!record.isExist) {
     const params = await api.query.cdpEngine.collateralParams({ Token: tokenName });
     const defaultLiquidationRatio = await api.consts.cdpEngine.defaultLiquidationRatio;
@@ -37,7 +37,7 @@ export const updateParams = async (event: SubstrateEvent, module: 'cdp' | 'loans
     const newRecord = record.record;
     newRecord.collateralId = tokenName;
     newRecord.maximumTotalDebitValue = BigInt((params as any ).maximumTotalDebitValue.toString());
-    newRecord.interestRatePerSec = BigInt((params as any).interestRatePerSec.toString());
+    newRecord.interestRatePerSec = BigInt((params as any).interestRatePerSec.toString()) + BigInt(globalInterestRatePerSec.toString());
     newRecord.liquidationRatio = (params as any).liquidationRatio ? BigInt((params as any).liquidationRatio.toString()) : BigInt(defaultLiquidationRatio.toString());
     newRecord.liquidationPenalty = (params as any).liquidationPenalty ? BigInt((params as any).liquidationPenalty.toString()) : BigInt(defaultLiquidationPenalty.toString());
     newRecord.requiredCollateralRatio = BigInt((params as any).requiredCollateralRatio.toString());
@@ -51,7 +51,7 @@ export const updateParams = async (event: SubstrateEvent, module: 'cdp' | 'loans
     newParams.endAtBlock = BigInt(height);
     newParams.collateralId = record.record.collateralId;
     newParams.maximumTotalDebitValue = record.record.maximumTotalDebitValue;
-    newParams.interestRatePerSec = record.record.interestRatePerSec;
+    newParams.interestRatePerSec = record.record.interestRatePerSec + BigInt(globalInterestRatePerSec.toString());
     newParams.liquidationRatio = record.record.liquidationRatio;
     newParams.liquidationPenalty = record.record.liquidationPenalty;
     newParams.requiredCollateralRatio = record.record.requiredCollateralRatio;
