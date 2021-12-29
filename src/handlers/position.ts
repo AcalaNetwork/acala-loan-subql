@@ -14,7 +14,6 @@ export const updateLoanPosition = async (event: SubstrateEvent, isLiquidatiton =
   const oraclePrice = await api.query.acalaOracle.values({ Token: forceToCurrencyIdName(collateral) });
   const { value, timestamp } = oraclePrice.toJSON() as any;
   const price = FN.fromInner(value.toString(), 18);
-  const volume = FN.fromInner(collateral_amount.toString(), 12).times(price).toChainData();
   
   const owner = accountData.id;
   const token = tokenData.id;
