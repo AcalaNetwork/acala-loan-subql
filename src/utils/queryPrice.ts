@@ -3,8 +3,8 @@ import { Option } from "@polkadot/types";
 import { TimestampedValue } from '@open-web3/orml-types/interfaces';
 
 export const queryPrice = async (currency: string): Promise<FN> => {
-  const liquidCurrencyId = api.consts.homaLite.liquidCurrencyId;
-  const stakingCurrencyId = api.consts.homaLite.stakingCurrencyId;
+  const liquidCurrencyId = 'LKSM';
+  const stakingCurrencyId = 'KSM';
 
   if (liquidCurrencyId && forceToCurrencyIdName(liquidCurrencyId) === forceToCurrencyIdName(currency)) {
     const [_stakingTokenPrice, _stakingBalance, _liquidIssuance] = await Promise.all([
