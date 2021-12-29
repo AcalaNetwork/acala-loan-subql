@@ -1,4 +1,4 @@
-import { forceToCurrencyIdName } from "@acala-network/sdk-core";
+import { FixedPointNumber as FN, forceToCurrencyIdName } from "@acala-network/sdk-core";
 import { SubstrateEvent } from "@subql/types"
 import { getDateStartOfDay, getDateStartOfHour } from '../utils/date';
 import { getAccount, getCollateral, getDailyGlobalPosition, getDailyLoanPosition, getGlobalLoanPosition, getHourGolbalPosition, getHourLoanPosition, getLoanHistory, getLoanPosition } from "../utils/record";
@@ -11,12 +11,17 @@ export const updateLoanPosition = async (event: SubstrateEvent, isLiquidatiton =
   const accountData = await getAccount(account.toString());
   const tokenData = await getCollateral(forceToCurrencyIdName(collateral));
 
+  const oraclePrice = await api.query.acalaOracle.values({ Token: forceToCurrencyIdName(collateral) });
+  const { value, timestamp } = oraclePrice.toJSON() as any;
+  const price = FN.fromInner(value.toString(), 18);
+  const volume = FN.fromInner(collateral_amount.toString(), 12).times(price).toChainData();
+  
   const owner = accountData.id;
   const token = tokenData.id;
   const collateralAmount = isLiquidatiton ? -BigInt(collateral_amount.toString()) : BigInt(collateral_amount.toString());
   const debitAmount = isLiquidatiton ? -BigInt(debit_amount.toString()) : BigInt(debit_amount.toString());
-  const collateralVolume = collateralAmount.toString() !== '0';
-  const debitVolume = debitAmount.toString() !== '0';
+  const collateralVolume = FN.fromInner(collateral_amount.toString(), 12).times(price).toChainData();
+  const debitVolume = FN.fromInner(debit_amount.toString(), 12).times(price).toChainData();
   const exchangeRate = await getExchangeRateFromDb(BigInt(event.block.block.header.number.toString()), collateral);
 
   // loanposition personal part
@@ -103,7 +108,7 @@ export const updateLoanPosition = async (event: SubstrateEvent, isLiquidatiton =
   const keyArray = [
     { key: 'owner' },
     { key: 'collateral' },
-    { key: 'collateralAdjustment'},
+    { key: 'collateralAdjustment' },
     { key: 'debitAdjustment' }
   ];
   history.data = mapUpdateKVData(getKVData(event.event.data), keyArray)
