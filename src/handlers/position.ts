@@ -2,7 +2,7 @@ import { FixedPointNumber as FN, forceToCurrencyIdName } from "@acala-network/sd
 import { SubstrateEvent } from "@subql/types"
 import { getDateStartOfDay, getDateStartOfHour } from '../utils/date';
 import { getAccount, getCollateral, getDailyGlobalPosition, getDailyLoanPosition, getGlobalLoanPosition, getHourGolbalPosition, getHourLoanPosition, getLoanHistory, getLoanPosition } from "../utils/record";
-import { getExchangeRateFromDb, getKVData, mapUpdateKVData } from "../utils";
+import { getExchangeRateFromDb, getKVData, mapUpdateKVData, queryPrice } from "../utils";
 import { updateParams } from "./params";
 
 export const updateLoanPosition = async (event: SubstrateEvent, isLiquidatiton = false) => {
@@ -10,10 +10,7 @@ export const updateLoanPosition = async (event: SubstrateEvent, isLiquidatiton =
 
   const accountData = await getAccount(account.toString());
   const tokenData = await getCollateral(forceToCurrencyIdName(collateral));
-
-  const oraclePrice = await api.query.acalaOracle.values({ Token: forceToCurrencyIdName(collateral) });
-  const { value, timestamp } = oraclePrice.toJSON() as any;
-  const price = FN.fromInner(value.toString(), 18);
+  const price = await queryPrice(forceToCurrencyIdName(collateral));
   
   const owner = accountData.id;
   const token = tokenData.id;
