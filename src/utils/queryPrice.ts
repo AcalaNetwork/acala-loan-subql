@@ -9,18 +9,22 @@ const queryTotalStaking = async () => {
       const item = (cur[1].toJSON() as any).bonded.toString();
       return acc.add(FN.fromInner(item, 12));
     }, new FN(0, 12));
-    logger.info(totalInSubAccount.toString())
     const bonds = await api.query.homa.toBondPool()
     return totalInSubAccount.add(FN.fromInner(bonds.toString(), 12));
   } else {
-    const total = await api.query.homaLite.totalStakingCurrency();
-    return FN.fromInner(total.toString(), 12);
+    try {
+      const total = await api.query.homaLite?.totalStakingCurrency;
+      return FN.fromInner(total.toString(), 12);
+    } catch (error) {
+      const total = await api.query.homa?.totalStakingCurrency;
+      return FN.fromInner(total.toString(), 12);
+    }
   }
 }
 
 export const queryPrice = async (currency: string): Promise<FN> => {
-  const liquidCurrencyId = 'LKSM';
-  const stakingCurrencyId = 'KSM';
+  const liquidCurrencyId = api.consts.homa?.liquidCurrencyId || api.consts.homaLite?.liquidCurrencyId;
+  const stakingCurrencyId = api.consts.homa?.stakingCurrencyId || api.consts.homaLite?.stakingCurrencyId;
 
   if (liquidCurrencyId && forceToCurrencyIdName(liquidCurrencyId) === forceToCurrencyIdName(currency)) {
     const [_stakingTokenPrice, _liquidIssuance] = await Promise.all([
