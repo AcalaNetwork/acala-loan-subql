@@ -1,5 +1,6 @@
 import { forceToCurrencyName } from "@acala-network/sdk-core";
 import { CurrencyId } from "@acala-network/types/interfaces";
+import dayjs from "dayjs";
 import { Block } from "../types";
 import { getExchangeRateFromDb } from "../utils";
 import { getCollateral, getDailyCollateral, getHourCollateral } from "../utils/record"
@@ -16,7 +17,7 @@ export const updateCollateral = async (token: CurrencyId, totalDepositVolumeAjus
 
 export const updateHourCollateral = async (block: Block, token: CurrencyId, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
   const tokenName = forceToCurrencyName(token);
-  const id = `${tokenName}-${timestamp.toString()}`
+  const id = `${tokenName}-${dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')}`
   const hourCollateral = await getHourCollateral(id);
   hourCollateral.collateralId = tokenName;
   hourCollateral.depositVolume = hourCollateral.depositVolume + depositVolume;
@@ -33,7 +34,7 @@ export const updateHourCollateral = async (block: Block, token: CurrencyId, time
 
 export const updateDailyCollateral = async (block: Block, token: CurrencyId, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
   const tokenName = forceToCurrencyName(token);
-  const id = `${tokenName}-${timestamp.toString()}`;
+  const id = `${tokenName}-${dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')}`;
   const dailyCollateral = await getDailyCollateral(id);
   dailyCollateral.collateralId = tokenName;
   dailyCollateral.depositVolume = dailyCollateral.depositVolume + depositVolume;
