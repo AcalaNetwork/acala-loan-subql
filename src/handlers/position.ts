@@ -23,7 +23,7 @@ export const updatePosition = async (event: SubstrateEvent, owner: string, token
 
 export const updateHourPosition = async (block: Block, owner: string, token: CurrencyId, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
   const tokenName = forceToCurrencyName(token);
-  const id = `${owner}-${tokenName}-${dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')}`;
+  const id = `${owner}-${tokenName}-${timestamp.getTime()}`;
   const hourPosition = await getHourPosition(id);
   hourPosition.ownerId = owner;
   hourPosition.collateralId = tokenName;
@@ -41,7 +41,7 @@ export const updateHourPosition = async (block: Block, owner: string, token: Cur
 
 export const updateDailyPosition = async (block: Block, owner: string, token: CurrencyId, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
   const tokenName = forceToCurrencyName(token);
-  const id = `${owner}-${tokenName}-${dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')}`;
+  const id = `${owner}-${tokenName}-${timestamp.getTime()}`;
   const dailyPosition = await getDailyPosition(id);
   dailyPosition.ownerId = owner;
   dailyPosition.collateralId = tokenName;
@@ -61,7 +61,7 @@ export const createUpdatePositionHistroy = async (event: SubstrateEvent, owner: 
   const tokenName = forceToCurrencyName(token);
   const extrinshcData = await ensureExtrinsic(event);
   const blockData = await ensureBlock(event);
-  const historyId = `${extrinshcData.hash}-${event.event.index.toString()}`;
+  const historyId = `${blockData.hash}-${event.event.index.toString()}`;
   const history = await getUpdatePosition(historyId);
   history.ownerId = owner;
   history.blockId = blockData.hash;
@@ -78,7 +78,7 @@ export const createConfiscatePositionHistory = async (event: SubstrateEvent, own
   const tokenName = forceToCurrencyName(token);
   const extrinshcData = await ensureExtrinsic(event);
   const blockData = await ensureBlock(event);
-  const historyId = `${extrinshcData.hash}-${event.event.index.toString()}`;
+  const historyId = `${blockData.hash}-${event.event.index.toString()}`;
   const history = await getConfiscatePosition(historyId);
   history.ownerId = owner;
   history.blockId = blockData.hash;

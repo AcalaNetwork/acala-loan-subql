@@ -8,12 +8,11 @@ export const liquidateUnsafeCDP = async (event: SubstrateEvent) => {
   const [collateral, account, collateral_amount, bad_debt_value, liquidation_strategy] = event.event.data as unknown as [CurrencyId, AccountId, Balance, Balance, Balance];
 
   const owner = await getAccount(account.toString());
-  owner.txCount = owner.txCount + BigInt(1);
   const token = await getCollateral(forceToCurrencyName(collateral));
   const extrinshcData = await ensureExtrinsic(event);
   const blockData = await ensureBlock(event);
 
-  const id = `${extrinshcData.hash}-${event.event.index.toString()}`;
+  const id = `${blockData.hash}-${event.event.index.toString()}`;
 
   const history = await getLiquidUnsafe(id);
   history.ownerId = owner.id;
@@ -23,6 +22,8 @@ export const liquidateUnsafeCDP = async (event: SubstrateEvent) => {
   history.liquidationStrategy = liquidation_strategy.toString();
   history.blockId = blockData.id;
   history.extrinsicId = extrinshcData.id;
+
+  owner.txCount = owner.txCount + BigInt(1);
 
   await owner.save();
   await history.save();

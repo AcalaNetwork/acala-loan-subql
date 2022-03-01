@@ -8,12 +8,11 @@ export const closeByDex = async (event: SubstrateEvent) => {
   const [collateral, account, sold_collateral_amount, refund_collateral_amount, debit_value] = event.event.data as unknown as [CurrencyId, AccountId, Balance, Balance, Balance, Balance];
 
   const owner = await getAccount(account.toString());
-  owner.txCount = owner.txCount + BigInt(1);
 	const token = await getCollateral(forceToCurrencyName(collateral));
   const extrinshcData = await ensureExtrinsic(event);
   const blockData = await ensureBlock(event);
 
-  const id = `${extrinshcData.hash}-${event.event.index.toString()}`;
+  const id = `${blockData.hash}-${event.event.index.toString()}`;
   const price = await queryPrice(event, token.name);
 
   const history = await getCloseByDex(id);
@@ -26,6 +25,8 @@ export const closeByDex = async (event: SubstrateEvent) => {
   history.refundVolumeUSD = BigInt(price.times(FixedPointNumber.fromInner(refund_collateral_amount.toString(), token.decimals)).toString());
   history.extrinsicId = extrinshcData.id;
   history.blockId = blockData.id;
+
+  owner.txCount = owner.txCount + BigInt(1);
 
   await owner.save();
   await history.save();
