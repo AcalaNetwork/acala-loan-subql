@@ -1,4 +1,4 @@
-import { FixedPointNumber as FN, forceToCurrencyIdName } from "@acala-network/sdk-core";
+import { FixedPointNumber as FN, forceToCurrencyName } from "@acala-network/sdk-core";
 import { SubstrateEvent } from "@subql/types"
 import { getDateStartOfDay, getDateStartOfHour } from '../utils/date';
 import { getAccount, getCollateral } from "../utils/record";
@@ -11,8 +11,8 @@ export const uploadLoainPosition = async (event: SubstrateEvent, isLiquidatiton 
 
   const blockData = await ensureBlock(event);
   const accountData = await getAccount(account.toString());
-  const tokenData = await getCollateral(forceToCurrencyIdName(collateral));
-  const price = await queryPrice(event, forceToCurrencyIdName(collateral));
+  const tokenData = await getCollateral(forceToCurrencyName(collateral));
+  const price = await queryPrice(event, forceToCurrencyName(collateral));
   
   const owner = accountData.id;
   const token = tokenData.id;
