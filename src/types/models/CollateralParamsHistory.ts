@@ -14,8 +14,6 @@ export class CollateralParamsHistory implements Entity {
 
     public id: string;
 
-    public endAtBlock?: bigint;
-
     public collateralId?: string;
 
     public maximumTotalDebitValue?: bigint;
@@ -27,6 +25,10 @@ export class CollateralParamsHistory implements Entity {
     public liquidationPenalty?: bigint;
 
     public requiredCollateralRatio?: bigint;
+
+    public startAtBlockId?: string;
+
+    public endAtBlockId?: string;
 
 
     async save(): Promise<void>{
@@ -53,6 +55,20 @@ export class CollateralParamsHistory implements Entity {
     static async getByCollateralId(collateralId: string): Promise<CollateralParamsHistory[] | undefined>{
       
       const records = await store.getByField('CollateralParamsHistory', 'collateralId', collateralId);
+      return records.map(record => CollateralParamsHistory.create(record));
+      
+    }
+
+    static async getByStartAtBlockId(startAtBlockId: string): Promise<CollateralParamsHistory[] | undefined>{
+      
+      const records = await store.getByField('CollateralParamsHistory', 'startAtBlockId', startAtBlockId);
+      return records.map(record => CollateralParamsHistory.create(record));
+      
+    }
+
+    static async getByEndAtBlockId(endAtBlockId: string): Promise<CollateralParamsHistory[] | undefined>{
+      
+      const records = await store.getByField('CollateralParamsHistory', 'endAtBlockId', endAtBlockId);
       return records.map(record => CollateralParamsHistory.create(record));
       
     }

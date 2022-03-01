@@ -1,10 +1,10 @@
 import { Rate, OptionRate } from "@acala-network/types/interfaces";
-import { forceToCurrencyIdName } from "@acala-network/sdk-core";
-import { getExchangeRate } from "./record";
+import { forceToCurrencyName } from "@acala-network/sdk-core";
+import { getExchangeBoundle } from "./record";
 
-export const getExchangeRateFromDb = async (block: bigint, token: any) => {
+export const getExchangeRateFromDb = async (blockHeight: bigint, token: any) => {
 
-  const { isExist, record } = await getExchangeRate(`${block.toString()}-${forceToCurrencyIdName(token)}`);
+  const { isExist, record } = await getExchangeBoundle(`${blockHeight.toString()}-${forceToCurrencyName(token)}`);
 
   if(isExist) {
     return record.debitExchangeRate;
@@ -13,9 +13,8 @@ export const getExchangeRateFromDb = async (block: bigint, token: any) => {
     const globalExchangeRate = api.consts.cdpEngine.defaultDebitExchangeRate as unknown as Rate;
     const exchangeRate = debitExchangeRate.isNone ? BigInt(globalExchangeRate.toString()) : BigInt(debitExchangeRate.unwrapOrDefault().toString());
 
-    record.collateralId = forceToCurrencyIdName(token);
+    record.collateralId = forceToCurrencyName(token);
     record.debitExchangeRate = exchangeRate;
-    record.block = block;
     await record.save();
 
     return exchangeRate;

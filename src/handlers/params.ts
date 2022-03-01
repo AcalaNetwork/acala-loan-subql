@@ -1,65 +1,62 @@
-import { forceToCurrencyIdName } from "@acala-network/sdk-core";
 import { SubstrateEvent } from "@subql/types";
-import { getCollateral, getCollateralParams, getCollateralParamsHistory } from "../utils/record";
+import { ensureBlock, ensureExtrinsic } from ".";
+import { getCollateral, getCollateralParams, getCollateralParamsHistory, getUpdateCollateralParams } from "../utils";
 
-const fieldMap = new Map([
-  ['InterestRatePerSecUpdated', 'interestRatePerSec'],
-  ['LiquidationRatioUpdated', 'liquidationRatio'],
-  ['LiquidationPenaltyUpdated', 'liquidationPenalty'],
-  ['RequiredCollateralRatioUpdated', 'requiredCollateralRatio'],
-  ['MaximumTotalDebitValueUpdated', 'maximumTotalDebitValue']
-]);
+export const updateTokenParams = async (event: SubstrateEvent, token: string, field: string, value: bigint) => {
+  const { isExist, record: CollateralParamsNow } = await getCollateralParams(token);
+  const blockData = await ensureBlock(event);
+  const historyId = `${blockData.number}-${token}`;
 
-export const updateParams = async (event: SubstrateEvent, module: 'cdp' | 'loans') => {
-  let tokenName = '';
-  let value = BigInt(0);
+  if (isExist) {
+    const history = await getCollateralParamsHistory(historyId);
+    history.startAtBlockId = CollateralParamsNow.updateAtId;
+    history.endAtBlockId = blockData.number.toString();
+    history.maximumTotalDebitValue = CollateralParamsNow.maximumTotalDebitValue;
+    history.interestRatePerSec = CollateralParamsNow.interestRatePerSec;
+    history.liquidationRatio = CollateralParamsNow.liquidationRatio;
+    history.liquidationPenalty = CollateralParamsNow.liquidationPenalty;
+    history.requiredCollateralRatio = CollateralParamsNow.requiredCollateralRatio;
 
-  if(module === 'cdp') {
-    const [token, amount] = event.event.data;
-    tokenName = (token.toJSON() as any).token;
-    value = BigInt(amount.toString())
-  } else if(module === 'loans') {
-    const [account, collateral] = event.event.data;
-    tokenName = forceToCurrencyIdName(collateral);
-  } else return;
-  const method = event.event.method.toString();
-  const height = event.block.block.header.number.toString();
+    CollateralParamsNow[field] = value;
+    CollateralParamsNow.updateAtId = blockData.number.toString();
 
-  await getCollateral(tokenName);
-  const record = await getCollateralParams(tokenName);
-
-  const globalInterestRatePerSec = await api.query.cdpEngine.globalInterestRatePerSec();
-
-  if (!record.isExist) {
-    const params = await api.query.cdpEngine.collateralParams({ Token: tokenName });
+    await history.save();
+    await CollateralParamsNow.save();
+    await createUpdateCollateralParamsHistory(event, token, CollateralParamsNow.maximumTotalDebitValue, CollateralParamsNow.interestRatePerSec, CollateralParamsNow.liquidationRatio, CollateralParamsNow.liquidationPenalty, CollateralParamsNow.requiredCollateralRatio);
+  } else {
+    const globalInterestRatePerSec = await api.query.cdpEngine.globalInterestRatePerSec();
+    const params = await api.query.cdpEngine.collateralParams({ Token: token });
     const defaultLiquidationRatio = await api.consts.cdpEngine.defaultLiquidationRatio;
     const defaultLiquidationPenalty = await api.consts.cdpEngine.defaultLiquidationPenalty;
-    const newRecord = record.record;
-    newRecord.collateralId = tokenName;
-    newRecord.maximumTotalDebitValue = BigInt((params as any ).maximumTotalDebitValue.toString());
-    newRecord.interestRatePerSec = BigInt((params as any).interestRatePerSec.toString()) + BigInt(globalInterestRatePerSec.toString());
-    newRecord.liquidationRatio = (params as any).liquidationRatio ? BigInt((params as any).liquidationRatio.toString()) : BigInt(defaultLiquidationRatio.toString());
-    newRecord.liquidationPenalty = (params as any).liquidationPenalty ? BigInt((params as any).liquidationPenalty.toString()) : BigInt(defaultLiquidationPenalty.toString());
-    newRecord.requiredCollateralRatio = BigInt((params as any).requiredCollateralRatio.toString());
+    CollateralParamsNow.collateralId = token;
+    CollateralParamsNow.updateAtId = blockData.number.toString();
+    CollateralParamsNow.maximumTotalDebitValue = BigInt((params as any ).maximumTotalDebitValue.toString());
+    CollateralParamsNow.interestRatePerSec = BigInt((params as any).interestRatePerSec.toString()) + BigInt(globalInterestRatePerSec.toString());
+    CollateralParamsNow.liquidationRatio = (params as any).liquidationRatio ? BigInt((params as any).liquidationRatio.toString()) : BigInt(defaultLiquidationRatio.toString());
+    CollateralParamsNow.liquidationPenalty = (params as any).liquidationPenalty ? BigInt((params as any).liquidationPenalty.toString()) : BigInt(defaultLiquidationPenalty.toString());
+    CollateralParamsNow.requiredCollateralRatio = BigInt((params as any).requiredCollateralRatio.toString());
 
-    await newRecord.save();
-  } else {
-    const field = fieldMap.get(method);
-    if(!field) return;
-  
-    const newParams = await getCollateralParamsHistory(`${height}-${tokenName}`);
-    newParams.endAtBlock = BigInt(height);
-    newParams.collateralId = record.record.collateralId;
-    newParams.maximumTotalDebitValue = record.record.maximumTotalDebitValue;
-    newParams.interestRatePerSec = record.record.interestRatePerSec + BigInt(globalInterestRatePerSec.toString());
-    newParams.liquidationRatio = record.record.liquidationRatio;
-    newParams.liquidationPenalty = record.record.liquidationPenalty;
-    newParams.requiredCollateralRatio = record.record.requiredCollateralRatio;
-    newParams[field] = BigInt(value);
-
-    record.record[field] = BigInt(value);
-  
-    await record.record.save();
-    await newParams.save();
+    await CollateralParamsNow.save();
+    await createUpdateCollateralParamsHistory(event, token, CollateralParamsNow.maximumTotalDebitValue, CollateralParamsNow.interestRatePerSec, CollateralParamsNow.liquidationRatio, CollateralParamsNow.liquidationPenalty, CollateralParamsNow.requiredCollateralRatio);
   }
+}
+
+export const createUpdateCollateralParamsHistory = async (event: SubstrateEvent, token: string, maximumTotalDebitValue: bigint, interestRatePerSec: bigint, liquidationRatio: bigint, liquidationPenalty: bigint, requiredCollateralRatio: bigint) => {
+  const blockData = await ensureBlock(event);
+  const extrinshcData = await ensureExtrinsic(event);
+
+  await getCollateral(token);
+
+  const id = `${blockData.hash}-${token}`;
+  const history = await getUpdateCollateralParams(id);
+  history.collateralId = token;
+  history.maximumTotalDebitValue = maximumTotalDebitValue;
+  history.interestRatePerSec = interestRatePerSec;
+  history.liquidationPenalty = liquidationPenalty;
+  history.liquidationRatio = liquidationRatio;
+  history.requiredCollateralRatio = requiredCollateralRatio;
+  history.blockId = blockData.id;
+  history.extrinsicId = extrinshcData.id;
+
+  await history.save();
 }

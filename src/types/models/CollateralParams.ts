@@ -26,6 +26,8 @@ export class CollateralParams implements Entity {
 
     public requiredCollateralRatio?: bigint;
 
+    public updateAtId?: string;
+
 
     async save(): Promise<void>{
         let id = this.id;
@@ -51,6 +53,13 @@ export class CollateralParams implements Entity {
     static async getByCollateralId(collateralId: string): Promise<CollateralParams[] | undefined>{
       
       const records = await store.getByField('CollateralParams', 'collateralId', collateralId);
+      return records.map(record => CollateralParams.create(record));
+      
+    }
+
+    static async getByUpdateAtId(updateAtId: string): Promise<CollateralParams[] | undefined>{
+      
+      const records = await store.getByField('CollateralParams', 'updateAtId', updateAtId);
       return records.map(record => CollateralParams.create(record));
       
     }

@@ -1,6 +1,16 @@
-import { FixedPointNumber as FN, forceToCurrencyIdName } from "@acala-network/sdk-core";
+import { FixedPointNumber as FN, forceToCurrencyName } from "@acala-network/sdk-core";
 import { Option } from "@polkadot/types";
 import { TimestampedValue } from '@open-web3/orml-types/interfaces';
+import { getTokenDecimals } from "@acala-network/subql-utils";
+import { getPriceBoundle } from "./record";
+import { SubstrateEvent } from "@subql/types";
+import { ensureBlock } from "../handlers";
+import { CurrencyId } from "@acala-network/types/interfaces";
+
+const getDecimals = (token: string) => {
+  const decimals = getTokenDecimals(api as any, token);
+  return decimals;
+}
 
 const queryTotalStaking = async () => {
   if (api.query.homa) {
@@ -22,24 +32,38 @@ const queryTotalStaking = async () => {
   }
 }
 
-export const queryPrice = async (currency: string): Promise<FN> => {
-  const liquidCurrencyId = api.consts.homa?.liquidCurrencyId || api.consts.homaLite?.liquidCurrencyId;
-  const stakingCurrencyId = api.consts.homa?.stakingCurrencyId || api.consts.homaLite?.stakingCurrencyId;
+export const circulatePrice = async (currency: string): Promise<FN> => {
+  const liquidCurrencyId = (api.consts.homa?.liquidCurrencyId || api.consts.homaLite?.liquidCurrencyId) as unknown as CurrencyId;
+  const stakingCurrencyId = (api.consts.homa?.stakingCurrencyId || api.consts.homaLite?.stakingCurrencyId) as unknown as CurrencyId;
 
-  if (liquidCurrencyId && forceToCurrencyIdName(liquidCurrencyId) === forceToCurrencyIdName(currency)) {
+  if (liquidCurrencyId && forceToCurrencyName(liquidCurrencyId) === forceToCurrencyName(currency)) {
     const [_stakingTokenPrice, _liquidIssuance] = await Promise.all([
-      api.query.acalaOracle.values({ Token: forceToCurrencyIdName(stakingCurrencyId) }),
+      api.query.acalaOracle.values({ Token: forceToCurrencyName(stakingCurrencyId) }),
       api.query.tokens.totalIssuance({ Token: currency })
     ])
-    const stakingTokenPrice = (_stakingTokenPrice as Option<TimestampedValue>).unwrapOrDefault().value.toString();
+    const stakingTokenPrice = (_stakingTokenPrice as unknown as Option<TimestampedValue>).unwrapOrDefault().value.toString();
     const stakingBalance = await queryTotalStaking();
-    const liquidIssuance = FN.fromInner(_liquidIssuance.toString(), 12);
+    const liquidIssuance = FN.fromInner(_liquidIssuance.toString(), getDecimals(currency));
     const ratio = liquidIssuance.isZero() ? FN.ZERO : stakingBalance.div(liquidIssuance);
     return FN.fromInner(stakingTokenPrice, 18).times(ratio);
   } else {
-    const oraclePrice = await api.query.acalaOracle.values({ Token: forceToCurrencyIdName(currency) });
-    const value = (oraclePrice as Option<TimestampedValue>).unwrapOrDefault().value.toString();
+    const oraclePrice = await api.query.acalaOracle.values({ Token: forceToCurrencyName(currency) });
+    const value = (oraclePrice as unknown as Option<TimestampedValue>).unwrapOrDefault().value.toString();
     return FN.fromInner(value, 18);
   };
 }
 
+export const queryPrice = async (event: SubstrateEvent, token: string) => {
+  const {id: blockId, number} = await ensureBlock(event);
+  const id = `${number}-${token}`;
+  const {isExist, record} = await getPriceBoundle(id);
+  if(isExist) return new FN(record.price.toString());
+  else {
+    record.blockId = blockId;
+    record.collateralId = token;
+    record.price = BigInt((await circulatePrice(token)).toNumber());
+
+    await record.save();
+    return new FN(record.price.toString());
+  }
+}
