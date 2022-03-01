@@ -1,4 +1,4 @@
-import { forceToCurrencyName } from "@acala-network/sdk-core";
+import { forceToCurrencyIdName } from "@acala-network/sdk-core";
 import { AccountId, Balance, CurrencyId } from "@acala-network/types/interfaces";
 import { SubstrateEvent } from "@subql/types";
 import { ensureBlock, ensureExtrinsic } from ".";
@@ -8,7 +8,7 @@ export const liquidateUnsafeCDP = async (event: SubstrateEvent) => {
   const [collateral, account, collateral_amount, bad_debt_value, liquidation_strategy] = event.event.data as unknown as [CurrencyId, AccountId, Balance, Balance, Balance];
 
   const owner = await getAccount(account.toString());
-  const token = await getCollateral(forceToCurrencyName(collateral));
+  const token = await getCollateral(forceToCurrencyIdName(collateral));
   const extrinshcData = await ensureExtrinsic(event);
   const blockData = await ensureBlock(event);
 

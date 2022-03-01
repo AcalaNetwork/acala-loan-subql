@@ -1,4 +1,4 @@
-import { FixedPointNumber as FN, forceToCurrencyName } from "@acala-network/sdk-core";
+import { FixedPointNumber as FN, forceToCurrencyIdName } from "@acala-network/sdk-core";
 import { Option } from "@polkadot/types";
 import { TimestampedValue } from '@open-web3/orml-types/interfaces';
 import { getTokenDecimals } from "@acala-network/subql-utils";
@@ -36,9 +36,9 @@ export const circulatePrice = async (currency: string): Promise<FN> => {
   const liquidCurrencyId = (api.consts.homa?.liquidCurrencyId || api.consts.homaLite?.liquidCurrencyId) as unknown as CurrencyId;
   const stakingCurrencyId = (api.consts.homa?.stakingCurrencyId || api.consts.homaLite?.stakingCurrencyId) as unknown as CurrencyId;
 
-  if (liquidCurrencyId && forceToCurrencyName(liquidCurrencyId) === forceToCurrencyName(currency)) {
+  if (liquidCurrencyId && forceToCurrencyIdName(liquidCurrencyId) === forceToCurrencyIdName(currency)) {
     const [_stakingTokenPrice, _liquidIssuance] = await Promise.all([
-      api.query.acalaOracle.values({ Token: forceToCurrencyName(stakingCurrencyId) }),
+      api.query.acalaOracle.values({ Token: forceToCurrencyIdName(stakingCurrencyId) }),
       api.query.tokens.totalIssuance({ Token: currency })
     ])
     const stakingTokenPrice = (_stakingTokenPrice as unknown as Option<TimestampedValue>).unwrapOrDefault().value.toString();
@@ -47,7 +47,7 @@ export const circulatePrice = async (currency: string): Promise<FN> => {
     const ratio = liquidIssuance.isZero() ? FN.ZERO : stakingBalance.div(liquidIssuance);
     return FN.fromInner(stakingTokenPrice, 18).times(ratio);
   } else {
-    const oraclePrice = await api.query.acalaOracle.values({ Token: forceToCurrencyName(currency) });
+    const oraclePrice = await api.query.acalaOracle.values({ Token: forceToCurrencyIdName(currency) });
     const value = (oraclePrice as unknown as Option<TimestampedValue>).unwrapOrDefault().value.toString();
     return FN.fromInner(value, 18);
   };

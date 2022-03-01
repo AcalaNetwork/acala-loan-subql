@@ -1,4 +1,4 @@
-import { forceToCurrencyName } from "@acala-network/sdk-core";
+import { forceToCurrencyIdName } from "@acala-network/sdk-core";
 import { AccountId, Balance, CurrencyId } from "@acala-network/types/interfaces";
 import { SubstrateEvent } from "@subql/types";
 import { getCollateral } from "../utils/record";
@@ -22,7 +22,7 @@ export const updateParams = async (event: SubstrateEvent, module: 'cdp' | 'loans
     value = BigInt(amount.toString())
   } else if(module === 'loans') {
     const [account, collateral] = event.event.data as unknown as [AccountId, CurrencyId];
-    tokenName = forceToCurrencyName(collateral);
+    tokenName = forceToCurrencyIdName(collateral);
   } else return;
   const method = event.event.method.toString();
 
