@@ -5,6 +5,8 @@ import assert from 'assert';
 
 
 
+type UpdateCollateralParamsProps = Omit<UpdateCollateralParams, NonNullable<FunctionPropertyNames<UpdateCollateralParams>>>;
+
 export class UpdateCollateralParams implements Entity {
 
     constructor(id: string) {
@@ -45,7 +47,7 @@ export class UpdateCollateralParams implements Entity {
         assert((id !== null && id !== undefined), "Cannot get UpdateCollateralParams entity without an ID");
         const record = await store.get('UpdateCollateralParams', id.toString());
         if (record){
-            return UpdateCollateralParams.create(record);
+            return UpdateCollateralParams.create(record as UpdateCollateralParamsProps);
         }else{
             return;
         }
@@ -55,26 +57,26 @@ export class UpdateCollateralParams implements Entity {
     static async getByCollateralId(collateralId: string): Promise<UpdateCollateralParams[] | undefined>{
       
       const records = await store.getByField('UpdateCollateralParams', 'collateralId', collateralId);
-      return records.map(record => UpdateCollateralParams.create(record));
+      return records.map(record => UpdateCollateralParams.create(record as UpdateCollateralParamsProps));
       
     }
 
     static async getByBlockId(blockId: string): Promise<UpdateCollateralParams[] | undefined>{
       
       const records = await store.getByField('UpdateCollateralParams', 'blockId', blockId);
-      return records.map(record => UpdateCollateralParams.create(record));
+      return records.map(record => UpdateCollateralParams.create(record as UpdateCollateralParamsProps));
       
     }
 
     static async getByExtrinsicId(extrinsicId: string): Promise<UpdateCollateralParams[] | undefined>{
       
       const records = await store.getByField('UpdateCollateralParams', 'extrinsicId', extrinsicId);
-      return records.map(record => UpdateCollateralParams.create(record));
+      return records.map(record => UpdateCollateralParams.create(record as UpdateCollateralParamsProps));
       
     }
 
 
-    static create(record: Partial<Omit<UpdateCollateralParams, FunctionPropertyNames<UpdateCollateralParams>>> & Entity): UpdateCollateralParams {
+    static create(record: UpdateCollateralParamsProps): UpdateCollateralParams {
         assert(typeof record.id === 'string', "id must be provided");
         let entity = new UpdateCollateralParams(record.id);
         Object.assign(entity,record);

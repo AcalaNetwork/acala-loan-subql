@@ -7,11 +7,6 @@ import { ensureBlock } from "../handlers";
 import { CurrencyId } from "@acala-network/types/interfaces";
 import { getTokenDecimals } from ".";
 
-const getDecimals = async (token: string) => {
-  const decimals = await getTokenDecimals(api as any, token);
-  return decimals;
-}
-
 const queryTotalStaking = async () => {
   if (api.query.homa) {
     const stakingLedgers = await api.query.homa.stakingLedgers.entries();
@@ -58,13 +53,14 @@ export const queryPrice = async (event: SubstrateEvent, token: string) => {
   const {id: blockId, number} = await ensureBlock(event);
   const id = `${number}-${token}`;
   const {isExist, record} = await getPriceBoundle(id);
-  if(isExist) return new FN(record.price.toString());
+  if(isExist) return new FN(record.price);
   else {
+    const price = await circulatePrice(token)
     record.blockId = blockId;
     record.collateralId = token;
-    record.price = BigInt((await circulatePrice(token)).toNumber());
+    record.price = price.toString();
 
     await record.save();
-    return new FN(record.price.toString());
+    return price
   }
 }

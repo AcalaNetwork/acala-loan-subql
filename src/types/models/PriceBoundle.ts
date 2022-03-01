@@ -5,6 +5,8 @@ import assert from 'assert';
 
 
 
+type PriceBoundleProps = Omit<PriceBoundle, NonNullable<FunctionPropertyNames<PriceBoundle>>>;
+
 export class PriceBoundle implements Entity {
 
     constructor(id: string) {
@@ -18,7 +20,7 @@ export class PriceBoundle implements Entity {
 
     public collateralId?: string;
 
-    public price?: bigint;
+    public price?: string;
 
 
     async save(): Promise<void>{
@@ -35,7 +37,7 @@ export class PriceBoundle implements Entity {
         assert((id !== null && id !== undefined), "Cannot get PriceBoundle entity without an ID");
         const record = await store.get('PriceBoundle', id.toString());
         if (record){
-            return PriceBoundle.create(record);
+            return PriceBoundle.create(record as PriceBoundleProps);
         }else{
             return;
         }
@@ -45,19 +47,19 @@ export class PriceBoundle implements Entity {
     static async getByBlockId(blockId: string): Promise<PriceBoundle[] | undefined>{
       
       const records = await store.getByField('PriceBoundle', 'blockId', blockId);
-      return records.map(record => PriceBoundle.create(record));
+      return records.map(record => PriceBoundle.create(record as PriceBoundleProps));
       
     }
 
     static async getByCollateralId(collateralId: string): Promise<PriceBoundle[] | undefined>{
       
       const records = await store.getByField('PriceBoundle', 'collateralId', collateralId);
-      return records.map(record => PriceBoundle.create(record));
+      return records.map(record => PriceBoundle.create(record as PriceBoundleProps));
       
     }
 
 
-    static create(record: Partial<Omit<PriceBoundle, FunctionPropertyNames<PriceBoundle>>> & Entity): PriceBoundle {
+    static create(record: PriceBoundleProps): PriceBoundle {
         assert(typeof record.id === 'string', "id must be provided");
         let entity = new PriceBoundle(record.id);
         Object.assign(entity,record);

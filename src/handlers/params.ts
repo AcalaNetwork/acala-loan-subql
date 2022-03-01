@@ -6,11 +6,13 @@ export const updateTokenParams = async (event: SubstrateEvent, token: string, fi
   const { isExist, record: CollateralParamsNow } = await getCollateralParams(token);
   const blockData = await ensureBlock(event);
   const historyId = `${blockData.number}-${token}`;
+  await getCollateral(token);
 
   if (isExist) {
     const history = await getCollateralParamsHistory(historyId);
     history.startAtBlockId = CollateralParamsNow.updateAtId;
     history.endAtBlockId = blockData.hash.toString();
+    history.collateralId = token;
     history.maximumTotalDebitValue = CollateralParamsNow.maximumTotalDebitValue;
     history.interestRatePerSec = CollateralParamsNow.interestRatePerSec;
     history.liquidationRatio = CollateralParamsNow.liquidationRatio;

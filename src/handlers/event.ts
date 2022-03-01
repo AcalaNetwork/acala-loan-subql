@@ -12,9 +12,10 @@ export const ensureBlock = async (event: SubstrateEvent) => {
 }
 
 export const ensureExtrinsic = async (event: SubstrateEvent) => {
-  const extrinsicId = event.extrinsic.extrinsic.hash.toString();
-  const extrinsicData = await getExtrinsic(extrinsicId);
   const blockData = await ensureBlock(event);
+  const extrinsicId = `extrinsic-${event.extrinsic?.extrinsic?.hash?.toString()}` ?? `block-${blockData.id}`;
+
+  const extrinsicData = await getExtrinsic(extrinsicId);
   extrinsicData.blockId = blockData.id;
   extrinsicData.hash = extrinsicId;
   await extrinsicData.save();

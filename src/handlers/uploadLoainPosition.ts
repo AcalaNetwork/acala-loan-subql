@@ -15,27 +15,25 @@ export const uploadLoainPosition = async (event: SubstrateEvent, isLiquidatiton 
   const price = await queryPrice(event, forceToCurrencyName(collateral));
   
   const owner = accountData.id;
-  const token = tokenData.id;
   const collateralVolume = isLiquidatiton ? -BigInt(collateral_amount.toString()) : BigInt(collateral_amount.toString());
   const debitVolume = isLiquidatiton ? -BigInt(debit_amount.toString()) : BigInt(debit_amount.toString());
   const collateralUSD = BigInt(FN.fromInner(collateral_amount.toString(), tokenData.decimals).times(price).toChainData().toString());
   const debitUSD = BigInt(FN.fromInner(debit_amount.toString(), tokenData.decimals).times(price).toChainData().toString());
-
   const hourTime = getDateStartOfHour(blockData.timestamp).toDate();
   const dailyTime = getDateStartOfDay(blockData.timestamp).toDate();
 
-  await updateCollateral(token, collateralVolume, debitVolume);
-  await updateHourCollateral(blockData.number, token, hourTime, collateralVolume, debitVolume, collateralUSD, debitUSD);
-  await updateDailyCollateral(blockData.number, token, dailyTime, collateralVolume, debitVolume, collateralUSD, debitUSD);
+  await updateCollateral(collateral, collateralVolume, debitVolume);
+  await updateHourCollateral(blockData, collateral, hourTime, collateralVolume, debitVolume, collateralUSD, debitUSD);
+  await updateDailyCollateral(blockData, collateral, dailyTime, collateralVolume, debitVolume, collateralUSD, debitUSD);
 
-  await updatePosition(event, owner, token, collateralVolume, debitVolume);
-  await updateHourPosition(blockData.number, owner, token, hourTime, collateralVolume, debitVolume, collateralUSD, debitUSD);
-  await updateDailyPosition(blockData.number, owner, token, dailyTime, collateralVolume, debitVolume, collateralUSD, debitUSD);
+  await updatePosition(event, owner, collateral, collateralVolume, debitVolume);
+  await updateHourPosition(blockData, owner, collateral, hourTime, collateralVolume, debitVolume, collateralUSD, debitUSD);
+  await updateDailyPosition(blockData, owner, collateral, dailyTime, collateralVolume, debitVolume, collateralUSD, debitUSD);
 
   if(isLiquidatiton) {
-    await createConfiscatePositionHistory(event, owner, token, -collateralVolume, -debitVolume, -collateralUSD, -debitUSD);
+    await createConfiscatePositionHistory(event, owner, collateral, -collateralVolume, -debitVolume, -collateralUSD, -debitUSD);
   } else {
-    await createUpdatePositionHistroy(event, owner, token, collateralVolume, debitVolume, collateralUSD, debitUSD);
+    await createUpdatePositionHistroy(event, owner, collateral, collateralVolume, debitVolume, collateralUSD, debitUSD);
   }
 
   await updateParams(event, 'loans');

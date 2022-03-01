@@ -5,6 +5,8 @@ import assert from 'assert';
 
 
 
+type HourCollateralProps = Omit<HourCollateral, NonNullable<FunctionPropertyNames<HourCollateral>>>;
+
 export class HourCollateral implements Entity {
 
     constructor(id: string) {
@@ -45,7 +47,7 @@ export class HourCollateral implements Entity {
         assert((id !== null && id !== undefined), "Cannot get HourCollateral entity without an ID");
         const record = await store.get('HourCollateral', id.toString());
         if (record){
-            return HourCollateral.create(record);
+            return HourCollateral.create(record as HourCollateralProps);
         }else{
             return;
         }
@@ -55,12 +57,12 @@ export class HourCollateral implements Entity {
     static async getByCollateralId(collateralId: string): Promise<HourCollateral[] | undefined>{
       
       const records = await store.getByField('HourCollateral', 'collateralId', collateralId);
-      return records.map(record => HourCollateral.create(record));
+      return records.map(record => HourCollateral.create(record as HourCollateralProps));
       
     }
 
 
-    static create(record: Partial<Omit<HourCollateral, FunctionPropertyNames<HourCollateral>>> & Entity): HourCollateral {
+    static create(record: HourCollateralProps): HourCollateral {
         assert(typeof record.id === 'string', "id must be provided");
         let entity = new HourCollateral(record.id);
         Object.assign(entity,record);

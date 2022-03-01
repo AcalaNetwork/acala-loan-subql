@@ -1,8 +1,11 @@
+import { forceToCurrencyName } from "@acala-network/sdk-core";
+import { CurrencyId } from "@acala-network/types/interfaces";
+import { Block } from "../types";
 import { getExchangeRateFromDb } from "../utils";
 import { getCollateral, getDailyCollateral, getHourCollateral } from "../utils/record"
 
-export const updateCollateral = async (token: string, totalDepositVolumeAjustment: bigint, totalDebitVolumeAjustment: bigint) => {
-  const collateral = await getCollateral(token);
+export const updateCollateral = async (token: CurrencyId, totalDepositVolumeAjustment: bigint, totalDebitVolumeAjustment: bigint) => {
+  const collateral = await getCollateral(forceToCurrencyName(token));
   collateral.totalDebitVolume = collateral.totalDebitVolume + totalDebitVolumeAjustment;
   collateral.totalDepositVolume = collateral.totalDepositVolume + totalDepositVolumeAjustment;
   collateral.txCount = collateral.txCount + 1;
@@ -11,33 +14,35 @@ export const updateCollateral = async (token: string, totalDepositVolumeAjustmen
   return collateral;
 }
 
-export const updateHourCollateral = async (blockHeight: bigint, token: string, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
-  const id = `${token}-${timestamp.toString()}`
+export const updateHourCollateral = async (block: Block, token: CurrencyId, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
+  const tokenName = forceToCurrencyName(token);
+  const id = `${tokenName}-${timestamp.toString()}`
   const hourCollateral = await getHourCollateral(id);
-  hourCollateral.collateralId = token;
+  hourCollateral.collateralId = tokenName;
   hourCollateral.depositVolume = hourCollateral.depositVolume + depositVolume;
   hourCollateral.debitVolume = hourCollateral.debitVolume + debitVolume;
   hourCollateral.totalDepositVolumeUSD = hourCollateral.totalDepositVolumeUSD + depositVolumeUSD;
   hourCollateral.totalDebitVolumeUSD = hourCollateral.totalDebitVolumeUSD + debitVolumeUSD;
   hourCollateral.txCount = hourCollateral.txCount + BigInt(1);
   hourCollateral.timestamp = timestamp;
-  hourCollateral.debitExchangeRate = await getExchangeRateFromDb(blockHeight, token);
+  hourCollateral.debitExchangeRate = await getExchangeRateFromDb(block, token);
 
   await hourCollateral.save()
   return hourCollateral;
 }
 
-export const updateDailyCollateral = async (blockHeight: bigint, token: string, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
-  const id = `${token}-${timestamp.toString()}`;
+export const updateDailyCollateral = async (block: Block, token: CurrencyId, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
+  const tokenName = forceToCurrencyName(token);
+  const id = `${tokenName}-${timestamp.toString()}`;
   const dailyCollateral = await getDailyCollateral(id);
-  dailyCollateral.collateralId = token;
+  dailyCollateral.collateralId = tokenName;
   dailyCollateral.depositVolume = dailyCollateral.depositVolume + depositVolume;
   dailyCollateral.debitVolume = dailyCollateral.debitVolume + debitVolume;
   dailyCollateral.totalDepositVolumeUSD = dailyCollateral.totalDepositVolumeUSD + depositVolumeUSD;
   dailyCollateral.totalDebitVolumeUSD = dailyCollateral.totalDebitVolumeUSD + debitVolumeUSD;
   dailyCollateral.txCount = dailyCollateral.txCount + BigInt(1);
   dailyCollateral.timestamp = timestamp;
-  dailyCollateral.debitExchangeRate = await getExchangeRateFromDb(blockHeight, token);
+  dailyCollateral.debitExchangeRate = await getExchangeRateFromDb(block, token);
 
   await dailyCollateral.save()
   return dailyCollateral;

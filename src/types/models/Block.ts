@@ -5,6 +5,8 @@ import assert from 'assert';
 
 
 
+type BlockProps = Omit<Block, NonNullable<FunctionPropertyNames<Block>>>;
+
 export class Block implements Entity {
 
     constructor(id: string) {
@@ -35,7 +37,7 @@ export class Block implements Entity {
         assert((id !== null && id !== undefined), "Cannot get Block entity without an ID");
         const record = await store.get('Block', id.toString());
         if (record){
-            return Block.create(record);
+            return Block.create(record as BlockProps);
         }else{
             return;
         }
@@ -43,7 +45,7 @@ export class Block implements Entity {
 
 
 
-    static create(record: Partial<Omit<Block, FunctionPropertyNames<Block>>> & Entity): Block {
+    static create(record: BlockProps): Block {
         assert(typeof record.id === 'string', "id must be provided");
         let entity = new Block(record.id);
         Object.assign(entity,record);

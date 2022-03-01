@@ -5,6 +5,8 @@ import assert from 'assert';
 
 
 
+type HourPositionProps = Omit<HourPosition, NonNullable<FunctionPropertyNames<HourPosition>>>;
+
 export class HourPosition implements Entity {
 
     constructor(id: string) {
@@ -47,7 +49,7 @@ export class HourPosition implements Entity {
         assert((id !== null && id !== undefined), "Cannot get HourPosition entity without an ID");
         const record = await store.get('HourPosition', id.toString());
         if (record){
-            return HourPosition.create(record);
+            return HourPosition.create(record as HourPositionProps);
         }else{
             return;
         }
@@ -57,19 +59,19 @@ export class HourPosition implements Entity {
     static async getByOwnerId(ownerId: string): Promise<HourPosition[] | undefined>{
       
       const records = await store.getByField('HourPosition', 'ownerId', ownerId);
-      return records.map(record => HourPosition.create(record));
+      return records.map(record => HourPosition.create(record as HourPositionProps));
       
     }
 
     static async getByCollateralId(collateralId: string): Promise<HourPosition[] | undefined>{
       
       const records = await store.getByField('HourPosition', 'collateralId', collateralId);
-      return records.map(record => HourPosition.create(record));
+      return records.map(record => HourPosition.create(record as HourPositionProps));
       
     }
 
 
-    static create(record: Partial<Omit<HourPosition, FunctionPropertyNames<HourPosition>>> & Entity): HourPosition {
+    static create(record: HourPositionProps): HourPosition {
         assert(typeof record.id === 'string', "id must be provided");
         let entity = new HourPosition(record.id);
         Object.assign(entity,record);

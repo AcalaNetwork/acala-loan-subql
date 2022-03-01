@@ -149,7 +149,7 @@ type PriceBoundle @entity {
   block: Block
 
   collateral: Collateral
-  price: BigInt
+  price: String
 }
 
 type CollateralParams @entity {

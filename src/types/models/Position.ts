@@ -5,6 +5,8 @@ import assert from 'assert';
 
 
 
+type PositionProps = Omit<Position, NonNullable<FunctionPropertyNames<Position>>>;
+
 export class Position implements Entity {
 
     constructor(id: string) {
@@ -39,7 +41,7 @@ export class Position implements Entity {
         assert((id !== null && id !== undefined), "Cannot get Position entity without an ID");
         const record = await store.get('Position', id.toString());
         if (record){
-            return Position.create(record);
+            return Position.create(record as PositionProps);
         }else{
             return;
         }
@@ -49,26 +51,26 @@ export class Position implements Entity {
     static async getByOwnerId(ownerId: string): Promise<Position[] | undefined>{
       
       const records = await store.getByField('Position', 'ownerId', ownerId);
-      return records.map(record => Position.create(record));
+      return records.map(record => Position.create(record as PositionProps));
       
     }
 
     static async getByCollateralId(collateralId: string): Promise<Position[] | undefined>{
       
       const records = await store.getByField('Position', 'collateralId', collateralId);
-      return records.map(record => Position.create(record));
+      return records.map(record => Position.create(record as PositionProps));
       
     }
 
     static async getByUpdateAtId(updateAtId: string): Promise<Position[] | undefined>{
       
       const records = await store.getByField('Position', 'updateAtId', updateAtId);
-      return records.map(record => Position.create(record));
+      return records.map(record => Position.create(record as PositionProps));
       
     }
 
 
-    static create(record: Partial<Omit<Position, FunctionPropertyNames<Position>>> & Entity): Position {
+    static create(record: PositionProps): Position {
         assert(typeof record.id === 'string', "id must be provided");
         let entity = new Position(record.id);
         Object.assign(entity,record);

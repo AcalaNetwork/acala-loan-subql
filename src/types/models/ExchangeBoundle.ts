@@ -5,6 +5,8 @@ import assert from 'assert';
 
 
 
+type ExchangeBoundleProps = Omit<ExchangeBoundle, NonNullable<FunctionPropertyNames<ExchangeBoundle>>>;
+
 export class ExchangeBoundle implements Entity {
 
     constructor(id: string) {
@@ -35,7 +37,7 @@ export class ExchangeBoundle implements Entity {
         assert((id !== null && id !== undefined), "Cannot get ExchangeBoundle entity without an ID");
         const record = await store.get('ExchangeBoundle', id.toString());
         if (record){
-            return ExchangeBoundle.create(record);
+            return ExchangeBoundle.create(record as ExchangeBoundleProps);
         }else{
             return;
         }
@@ -45,19 +47,19 @@ export class ExchangeBoundle implements Entity {
     static async getByBlockId(blockId: string): Promise<ExchangeBoundle[] | undefined>{
       
       const records = await store.getByField('ExchangeBoundle', 'blockId', blockId);
-      return records.map(record => ExchangeBoundle.create(record));
+      return records.map(record => ExchangeBoundle.create(record as ExchangeBoundleProps));
       
     }
 
     static async getByCollateralId(collateralId: string): Promise<ExchangeBoundle[] | undefined>{
       
       const records = await store.getByField('ExchangeBoundle', 'collateralId', collateralId);
-      return records.map(record => ExchangeBoundle.create(record));
+      return records.map(record => ExchangeBoundle.create(record as ExchangeBoundleProps));
       
     }
 
 
-    static create(record: Partial<Omit<ExchangeBoundle, FunctionPropertyNames<ExchangeBoundle>>> & Entity): ExchangeBoundle {
+    static create(record: ExchangeBoundleProps): ExchangeBoundle {
         assert(typeof record.id === 'string', "id must be provided");
         let entity = new ExchangeBoundle(record.id);
         Object.assign(entity,record);

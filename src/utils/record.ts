@@ -181,7 +181,6 @@ export const getExchangeBoundle = async (id: string) => {
     const newRecord = new ExchangeBoundle(id);
 
     newRecord.collateralId = '';
-    newRecord.blockId = '';
     newRecord.debitExchangeRate = BigInt(0);
 
     return {
@@ -204,7 +203,6 @@ export const getExtrinsic = async (id: string) => {
 
     newRecord.hash = '';
     newRecord.blockId = '';
-    await newRecord.save();
     return newRecord;
   } else {
     return record;
@@ -299,7 +297,7 @@ export const getPriceBoundle = async (id: string) => {
 
     newRecord.collateralId = '';
     newRecord.blockId = '';
-    newRecord.price = BigInt(0);
+    newRecord.price = '0';
 
     return {
       isExist: false,
