@@ -1,6 +1,7 @@
 import { forceToCurrencyName } from "@acala-network/sdk-core";
 import { CurrencyId } from "@acala-network/types/interfaces";
 import { SubstrateEvent } from "@subql/types";
+import dayjs from "dayjs";
 import { ensureBlock, ensureExtrinsic } from ".";
 import { Block } from "../types";
 import { getExchangeRateFromDb } from "../utils";
@@ -22,7 +23,7 @@ export const updatePosition = async (event: SubstrateEvent, owner: string, token
 
 export const updateHourPosition = async (block: Block, owner: string, token: CurrencyId, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
   const tokenName = forceToCurrencyName(token);
-  const id = `${owner}-${tokenName}-${timestamp.toString()}`;
+  const id = `${owner}-${tokenName}-${dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')}`;
   const hourPosition = await getHourPosition(id);
   hourPosition.ownerId = owner;
   hourPosition.collateralId = tokenName;
@@ -40,7 +41,7 @@ export const updateHourPosition = async (block: Block, owner: string, token: Cur
 
 export const updateDailyPosition = async (block: Block, owner: string, token: CurrencyId, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
   const tokenName = forceToCurrencyName(token);
-  const id = `${owner}-${tokenName}-${timestamp.toString()}`;
+  const id = `${owner}-${tokenName}-${dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')}`;
   const dailyPosition = await getDailyPosition(id);
   dailyPosition.ownerId = owner;
   dailyPosition.collateralId = tokenName;

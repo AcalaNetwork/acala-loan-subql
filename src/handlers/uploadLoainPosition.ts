@@ -11,6 +11,7 @@ export const uploadLoainPosition = async (event: SubstrateEvent, isLiquidatiton 
 
   const blockData = await ensureBlock(event);
   const accountData = await getAccount(account.toString());
+  accountData.txCount = accountData.txCount + BigInt(1);
   const tokenData = await getCollateral(forceToCurrencyName(collateral));
   const price = await queryPrice(event, forceToCurrencyName(collateral));
   
@@ -36,5 +37,6 @@ export const uploadLoainPosition = async (event: SubstrateEvent, isLiquidatiton 
     await createUpdatePositionHistroy(event, owner, collateral, collateralVolume, debitVolume, collateralUSD, debitUSD);
   }
 
+  await accountData.save();
   await updateParams(event, 'loans');
 }
