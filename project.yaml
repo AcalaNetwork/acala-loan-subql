@@ -42,6 +42,7 @@ dataSources:
           filter:
             module: cdpEngine
             method: MaximumTotalDebitValueUpdated
+          
         - handler: handleLiquidateUnsafeCDP
           kind: substrate/EventHandler
           filter:

@@ -2,27 +2,41 @@
 
 // Auto-generated , DO NOT EDIT
 
+export {Block} from "./Block"
+
+export {Extrinsic} from "./Extrinsic"
+
 export {Account} from "./Account"
 
 export {Collateral} from "./Collateral"
 
-export {LoanPosition} from "./LoanPosition"
+export {HourCollateral} from "./HourCollateral"
 
-export {HourLoanPosition} from "./HourLoanPosition"
+export {DailyCollateral} from "./DailyCollateral"
 
-export {DailyLoanPosition} from "./DailyLoanPosition"
+export {Position} from "./Position"
 
-export {GlobalPosition} from "./GlobalPosition"
+export {HourPosition} from "./HourPosition"
 
-export {HourGlobalPosition} from "./HourGlobalPosition"
+export {DailyPosition} from "./DailyPosition"
 
-export {DailyGlobalPosition} from "./DailyGlobalPosition"
+export {ExchangeBoundle} from "./ExchangeBoundle"
 
-export {ExchangeRate} from "./ExchangeRate"
-
-export {LoanHistory} from "./LoanHistory"
+export {PriceBoundle} from "./PriceBoundle"
 
 export {CollateralParams} from "./CollateralParams"
 
 export {CollateralParamsHistory} from "./CollateralParamsHistory"
+
+export {UpdatePosition} from "./UpdatePosition"
+
+export {CloseByDex} from "./CloseByDex"
+
+export {LiquidUnsafe} from "./LiquidUnsafe"
+
+export {TransferPosition} from "./TransferPosition"
+
+export {ConfiscatePosition} from "./ConfiscatePosition"
+
+export {UpdateCollateralParams} from "./UpdateCollateralParams"
 

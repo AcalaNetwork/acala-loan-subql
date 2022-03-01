@@ -5,6 +5,8 @@ import assert from 'assert';
 
 
 
+type CollateralParamsProps = Omit<CollateralParams, NonNullable<FunctionPropertyNames<CollateralParams>>>;
+
 export class CollateralParams implements Entity {
 
     constructor(id: string) {
@@ -26,6 +28,8 @@ export class CollateralParams implements Entity {
 
     public requiredCollateralRatio?: bigint;
 
+    public updateAtId?: string;
+
 
     async save(): Promise<void>{
         let id = this.id;
@@ -41,7 +45,7 @@ export class CollateralParams implements Entity {
         assert((id !== null && id !== undefined), "Cannot get CollateralParams entity without an ID");
         const record = await store.get('CollateralParams', id.toString());
         if (record){
-            return CollateralParams.create(record);
+            return CollateralParams.create(record as CollateralParamsProps);
         }else{
             return;
         }
@@ -51,12 +55,19 @@ export class CollateralParams implements Entity {
     static async getByCollateralId(collateralId: string): Promise<CollateralParams[] | undefined>{
       
       const records = await store.getByField('CollateralParams', 'collateralId', collateralId);
-      return records.map(record => CollateralParams.create(record));
+      return records.map(record => CollateralParams.create(record as CollateralParamsProps));
+      
+    }
+
+    static async getByUpdateAtId(updateAtId: string): Promise<CollateralParams[] | undefined>{
+      
+      const records = await store.getByField('CollateralParams', 'updateAtId', updateAtId);
+      return records.map(record => CollateralParams.create(record as CollateralParamsProps));
       
     }
 
 
-    static create(record: Partial<Omit<CollateralParams, FunctionPropertyNames<CollateralParams>>> & Entity): CollateralParams {
+    static create(record: CollateralParamsProps): CollateralParams {
         assert(typeof record.id === 'string', "id must be provided");
         let entity = new CollateralParams(record.id);
         Object.assign(entity,record);
