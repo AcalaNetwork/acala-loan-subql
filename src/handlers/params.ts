@@ -10,7 +10,7 @@ export const updateTokenParams = async (event: SubstrateEvent, token: string, fi
   if (isExist) {
     const history = await getCollateralParamsHistory(historyId);
     history.startAtBlockId = CollateralParamsNow.updateAtId;
-    history.endAtBlockId = blockData.number.toString();
+    history.endAtBlockId = blockData.hash.toString();
     history.maximumTotalDebitValue = CollateralParamsNow.maximumTotalDebitValue;
     history.interestRatePerSec = CollateralParamsNow.interestRatePerSec;
     history.liquidationRatio = CollateralParamsNow.liquidationRatio;
@@ -18,7 +18,7 @@ export const updateTokenParams = async (event: SubstrateEvent, token: string, fi
     history.requiredCollateralRatio = CollateralParamsNow.requiredCollateralRatio;
 
     CollateralParamsNow[field] = value;
-    CollateralParamsNow.updateAtId = blockData.number.toString();
+    CollateralParamsNow.updateAtId = blockData.hash.toString();
 
     await history.save();
     await CollateralParamsNow.save();
@@ -29,7 +29,7 @@ export const updateTokenParams = async (event: SubstrateEvent, token: string, fi
     const defaultLiquidationRatio = await api.consts.cdpEngine.defaultLiquidationRatio;
     const defaultLiquidationPenalty = await api.consts.cdpEngine.defaultLiquidationPenalty;
     CollateralParamsNow.collateralId = token;
-    CollateralParamsNow.updateAtId = blockData.number.toString();
+    CollateralParamsNow.updateAtId = blockData.hash.toString();
     CollateralParamsNow.maximumTotalDebitValue = BigInt((params as any ).maximumTotalDebitValue.toString());
     CollateralParamsNow.interestRatePerSec = BigInt((params as any).interestRatePerSec.toString()) + BigInt(globalInterestRatePerSec.toString());
     CollateralParamsNow.liquidationRatio = (params as any).liquidationRatio ? BigInt((params as any).liquidationRatio.toString()) : BigInt(defaultLiquidationRatio.toString());

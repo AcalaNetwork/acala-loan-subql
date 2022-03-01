@@ -1,4 +1,4 @@
-import {getTokenDecimals} from '@acala-network/subql-utils';
+import { getTokenDecimals } from ".";
 import {
   Account, Collateral, Block, CollateralParams,
   CollateralParamsHistory,
@@ -69,10 +69,11 @@ export const getCloseByDex = async (id: string) => {
 
 export const getCollateral = async (token: string) => {
   const _collateral = await Collateral.get(token);
+  const decimals = await getTokenDecimals(api as any, token);
   if (!_collateral) {
     const newCollateral = new Collateral(token);
     newCollateral.name = token;
-    newCollateral.decimals = getTokenDecimals(api as any, token);
+    newCollateral.decimals = decimals;
     newCollateral.totalDepositVolume = BigInt(0);
     newCollateral.totalDebitVolume = BigInt(0);
     newCollateral.txCount = 0;

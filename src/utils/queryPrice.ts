@@ -1,14 +1,14 @@
 import { FixedPointNumber as FN, forceToCurrencyName } from "@acala-network/sdk-core";
 import { Option } from "@polkadot/types";
 import { TimestampedValue } from '@open-web3/orml-types/interfaces';
-import { getTokenDecimals } from "@acala-network/subql-utils";
 import { getPriceBoundle } from "./record";
 import { SubstrateEvent } from "@subql/types";
 import { ensureBlock } from "../handlers";
 import { CurrencyId } from "@acala-network/types/interfaces";
+import { getTokenDecimals } from ".";
 
-const getDecimals = (token: string) => {
-  const decimals = getTokenDecimals(api as any, token);
+const getDecimals = async (token: string) => {
+  const decimals = await getTokenDecimals(api as any, token);
   return decimals;
 }
 
@@ -43,7 +43,8 @@ export const circulatePrice = async (currency: string): Promise<FN> => {
     ])
     const stakingTokenPrice = (_stakingTokenPrice as unknown as Option<TimestampedValue>).unwrapOrDefault().value.toString();
     const stakingBalance = await queryTotalStaking();
-    const liquidIssuance = FN.fromInner(_liquidIssuance.toString(), getDecimals(currency));
+    const decimals = await getTokenDecimals(api as any, currency);
+    const liquidIssuance = FN.fromInner(_liquidIssuance.toString(), decimals);
     const ratio = liquidIssuance.isZero() ? FN.ZERO : stakingBalance.div(liquidIssuance);
     return FN.fromInner(stakingTokenPrice, 18).times(ratio);
   } else {

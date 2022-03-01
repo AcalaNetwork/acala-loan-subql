@@ -24,7 +24,7 @@ services:
     volumes:
       - ./:/app
     command:
-      - --local
+      - --debug
       - --subquery=/app
       - --schema=acala-loans
 
