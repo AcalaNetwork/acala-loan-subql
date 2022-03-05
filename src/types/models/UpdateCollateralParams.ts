@@ -32,7 +32,7 @@ export class UpdateCollateralParams implements Entity {
 
     public blockId: string;
 
-    public extrinsicId: string;
+    public extrinsicId?: string;
 
     public timestamp: Date;
 

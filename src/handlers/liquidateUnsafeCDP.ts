@@ -1,29 +1,34 @@
 import { forceToCurrencyName } from "@acala-network/sdk-core";
 import { AccountId, Balance, CurrencyId } from "@acala-network/types/interfaces";
 import { SubstrateEvent } from "@subql/types";
-import { getBlock, ensureExtrinsic } from ".";
-import { getAccount, getCollateral, getLiquidUnsafe } from "../utils";
+import { getAccount, getBlock, getCollateral, getExtrinsic, getLiquidUnsafe, getPriceBundle } from "../utils";
+import { getVolumeUSD } from '../utils/math';
 
 export const liquidateUnsafeCDP = async (event: SubstrateEvent) => {
-  const [collateral, account, collateral_amount, bad_debt_value, liquidation_strategy] = event.event.data as unknown as [CurrencyId, AccountId, Balance, Balance, Balance];
+  const [_collateral, account, collateral_amount, bad_debt_value, liquidation_strategy] = event.event.data as unknown as [CurrencyId, AccountId, Balance, Balance, Balance];
 
+  const block = await getBlock(event.block);
   const owner = await getAccount(account.toString());
-  const token = await getCollateral(forceToCurrencyName(collateral));
-  const extrinshcData = await ensureExtrinsic(event);
-  const blockData = await getBlock(event);
+  const collateral = await getCollateral(forceToCurrencyName(_collateral));
+  const priceBundle = await getPriceBundle(collateral.name, event.block);
+  const history = await getLiquidUnsafe(`${block.id}-${event.event.index.toString()}`);
 
-  const id = `${blockData.hash}-${event.event.index.toString()}`;
-
-  const history = await getLiquidUnsafe(id);
   history.ownerId = owner.id;
-  history.collateralId = token.name;
-  history.collateralVolume = BigInt(collateral_amount.toString());
+  history.collateralId = collateral.id;
+  history.collateralAmount = BigInt(collateral_amount.toString());
+  history.collateralVolumeUSD = getVolumeUSD(history.collateralAmount, collateral.decimals, priceBundle.price)
   history.badDebitVolumeUSD = BigInt(bad_debt_value.toString());
   history.liquidationStrategy = liquidation_strategy.toString();
-  history.blockId = blockData.id;
-  history.extrinsicId = extrinshcData.id;
+  history.blockId = block.id;
 
-  owner.txCount = owner.txCount + BigInt(1);
+  owner.txCount = owner.txCount + 1;
+
+  if (event.extrinsic) {
+    const extrinsic = await getExtrinsic(event.extrinsic);
+
+    history.senderId = extrinsic.senderId;
+    history.extrinsicId = extrinsic.id;
+  }
 
   await owner.save();
   await history.save();

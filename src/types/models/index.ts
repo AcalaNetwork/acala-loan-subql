@@ -10,7 +10,7 @@ export {Account} from "./Account"
 
 export {Collateral} from "./Collateral"
 
-export {HourCollateral} from "./HourCollateral"
+export {HourlyCollateral} from "./HourlyCollateral"
 
 export {DailyCollateral} from "./DailyCollateral"
 

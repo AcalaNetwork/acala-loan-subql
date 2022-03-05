@@ -1,12 +1,8 @@
-import { forceToCurrencyName } from "@acala-network/sdk-core";
-import { CurrencyId } from "@acala-network/types/interfaces";
 import { SubstrateEvent } from "@subql/types";
-import { getBlock, ensureExtrinsic } from ".";
 import { Account, Block, Collateral, DailyPosition, HourlyPosition, Position} from "../types";
-import { getVolumeUSD } from "../utils/math";
-import { getConfiscatePosition, getUpdatePosition } from "../utils/record";
+import { getBlock, getCollateral, getConfiscatePosition, getExtrinsic, getUpdatePosition } from "../utils/record";
 
-export const updatePAjustmentsition = async (
+export const updatePosition= (
   position: Position,
   block: Block,
   depositChanged: bigint,
@@ -14,93 +10,116 @@ export const updatePAjustmentsition = async (
 ) => {
   position.depositAmount = position.depositAmount + depositChanged;
   position.debitAmount = position.debitAmount + debitChanged;
-  position.updateAt = block.timestamp
-  position.updateAtBlockId = block.id
+  position.updateAt = block.timestamp;
+  position.updateAtBlockId = block.id;
+  position.txCount = position.txCount + 1;
 }
 
-export const updateHourlyPosition = async (
-  collateral: Collateral,
-  stableCoin: Collateral,
+export const updateHourlyPosition = (
   hourlyPosition: HourlyPosition,
   position: Position,
-  price: bigint,
   exchangeRate: bigint,
+  depositVolumeUSD: bigint,
+  debitVolumeUSD: bigint,
   depositChanged: bigint,
   debitChanged: bigint,
+  depositChangedUSD: bigint,
+  debitChangedUSD: bigint
 ) => {
   hourlyPosition.depositAmount = position.depositAmount;
-  hourlyPosition.debitAmount = position.depositAmount;
-  hourlyPosition.depositVolumeUSD = BigInt(getVolumeUSD(position.depositAmount, collateral.decimals, price).toString())
-  hourlyPosition.debitVolumeUSD = BigInt(getVolumeUSD(position.debitAmount, stableCoin.decimals, exchangeRate).toString())
+  hourlyPosition.debitAmount = position.debitAmount;
+  hourlyPosition.depositVolumeUSD = depositVolumeUSD;
+  hourlyPosition.debitVolumeUSD = debitVolumeUSD;
   hourlyPosition.debitExchangeRate = exchangeRate;
   hourlyPosition.depositChanged = hourlyPosition.depositChanged + depositChanged;
   hourlyPosition.debitChanged = hourlyPosition.debitChanged + debitChanged;
-  hourlyPosition.depositChangedUSD = BigInt(getVolumeUSD(hourlyPosition.depositChanged, collateral.decimals, price).toString())
-  hourlyPosition.debitChangedUSD = BigInt(getVolumeUSD(hourlyPosition.debitChanged, stableCoin.decimals, exchangeRate).toString())
+  hourlyPosition.depositChangedUSD = hourlyPosition.depositChangedUSD + depositChangedUSD;
+  hourlyPosition.debitChangedUSD = hourlyPosition.debitChangedUSD + debitChangedUSD;
   hourlyPosition.txCount = hourlyPosition.txCount + 1;
 }
 
-export const updatedailyPosition = async (
-  collateral: Collateral,
-  stableCoin: Collateral,
+export const updateDailyPosition = (
   dailyPosition: DailyPosition,
   position: Position,
-  price: bigint,
   exchangeRate: bigint,
+  depositVolumeUSD: bigint,
+  debitVolumeUSD: bigint,
   depositChanged: bigint,
   debitChanged: bigint,
+  depositChangedUSD: bigint,
+  debitChangedUSD: bigint
 ) => {
   dailyPosition.depositAmount = position.depositAmount;
-  dailyPosition.debitAmount = position.depositAmount;
-  dailyPosition.depositVolumeUSD = BigInt(getVolumeUSD(position.depositAmount, collateral.decimals, price).toString())
-  dailyPosition.debitVolumeUSD = BigInt(getVolumeUSD(position.debitAmount, stableCoin.decimals, exchangeRate).toString())
+  dailyPosition.debitAmount = position.debitAmount;
+  dailyPosition.depositVolumeUSD = depositVolumeUSD;
+  dailyPosition.debitVolumeUSD = debitVolumeUSD;
   dailyPosition.debitExchangeRate = exchangeRate;
   dailyPosition.depositChanged = dailyPosition.depositChanged + depositChanged;
   dailyPosition.debitChanged = dailyPosition.debitChanged + debitChanged;
-  dailyPosition.depositChangedUSD = BigInt(getVolumeUSD(dailyPosition.depositChanged, collateral.decimals, price).toString())
-  dailyPosition.debitChangedUSD = BigInt(getVolumeUSD(dailyPosition.debitChanged, stableCoin.decimals, exchangeRate).toString())
+  dailyPosition.depositChangedUSD = dailyPosition.depositChangedUSD + depositChangedUSD;
+  dailyPosition.debitChangedUSD = dailyPosition.debitChangedUSD + debitChangedUSD;
   dailyPosition.txCount = dailyPosition.txCount + 1;
 }
 
 export const createUpdatePositionHistroy = async (
   event: SubstrateEvent,
   owner: Account,
-  token: CurrencyId,
-  collateralAdjustment: bigint,
-  debitAdjustment: bigint,
-  collateralUSD: bigint,
-  debitUSD: bigint
+  collateralName: string,
+  depositChanged: bigint,
+  debitChanged: bigint,
+  depositChangedUSD: bigint,
+  debitChangedUSD: bigint,
+  price: bigint
 ) => {
-  const tokenName = forceToCurrencyName(token);
-  const extrinshc = await ensureExtrinsic(event);
-  const blockData = await getBlock(event);
-  const historyId = `${blockData.id}-${event.event.index.toString()}`;
-  const history = await getUpdatePosition(historyId);
+  const collateral = await getCollateral(collateralName);
+  const block = await getBlock(event.block);
+  const history = await getUpdatePosition(`${block.id}-${event.event.index.toString()}`);
 
   history.ownerId = owner.id;
-  history.blockId = blockData.hash;
-  history.collateralAdjustment = collateralAdjustment;
-  history.debitAdjustment = debitAdjustment;
-  history.collateralAdjustmentUSD = collateralUSD;
-  history.debitAdjustmentUSD = debitUSD;
-  history.collateralId = tokenName;
-  history.extrinsicId = extrinshc.id;
+  history.collateralId = collateral.id;
+  history.blockId = block.id;
+  history.collateralAdjustment = depositChanged;
+  history.debitAdjustment = debitChanged;
+  history.collateralAdjustmentUSD = depositChangedUSD;
+  history.debitAdjustmentUSD = debitChangedUSD;
+  history.price = price;
+  history.timestamp = block.timestamp;
+
+  if (event.extrinsic) {
+    const extrinsic = await getExtrinsic(event.extrinsic);
+    history.extrinsicId = extrinsic.id;
+  }
+
   await history.save();
 }
 
-export const createConfiscatePositionHistory = async (event: SubstrateEvent, owner: string, token: CurrencyId, collateralAdjustment: bigint, debitAdjustment: bigint, collateralUSD: bigint, debitUSD: bigint) => {
-  const tokenName = forceToCurrencyName(token);
-  const extrinshcData = await ensureExtrinsic(event);
-  const blockData = await getBlock(event);
-  const historyId = `${blockData.hash}-${event.event.index.toString()}`;
+export const createConfiscatePositionHistory = async (
+  event: SubstrateEvent,
+  owner: Account,
+  collateral: Collateral,
+  depositChanged: bigint,
+  debitChanged: bigint,
+  depositChangedUSD: bigint,
+  debitChangedUSD: bigint
+) => {
+  const block = await getBlock(event.block);
+  const historyId = `${block.id}-${event.event.index.toString()}`;
   const history = await getConfiscatePosition(historyId);
-  history.ownerId = owner;
-  history.blockId = blockData.hash;
-  history.collateralId = tokenName;
-  history.collateralAdjustment = collateralAdjustment;
-  history.debitAdjustment = debitAdjustment;
-  history.collateralAdjustmentUSD = collateralUSD;
-  history.debitAdjustmentUSD = debitUSD;
-  history.extrinsicId = extrinshcData.id;
+
+  history.blockId = block.id;
+  history.ownerId = owner.id
+  history.collateralId = collateral.id;
+  history.collateralAdjustment = depositChanged;
+  history.debitAdjustment = debitChanged;
+  history.collateralAdjustmentUSD = depositChangedUSD;
+  history.debitAdjustmentUSD = debitChangedUSD;
+
+  if (event.extrinsic) {
+    const extrinsic = await getExtrinsic(event.extrinsic);
+
+    history.senderId = extrinsic.senderId;
+    history.extrinsicId = extrinsic.id;
+  }
+
   await history.save();
 }

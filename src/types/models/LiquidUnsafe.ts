@@ -34,7 +34,7 @@ export class LiquidUnsafe implements Entity {
 
     public blockId: string;
 
-    public extrinsicId: string;
+    public extrinsicId?: string;
 
     public timestamp: Date;
 

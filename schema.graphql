@@ -28,10 +28,11 @@ type Account @entity {
   positions: [Position] @derivedFrom(field: "owner")
 
   # history
-  updatePosition: [UpdatePosition] @derivedFrom(field: "sender")
-  closeByDex: [CloseByDex] @derivedFrom(field: "sender")
-  liquidUnsafe: [LiquidUnsafe] @derivedFrom(field: "sender")
-  transferPosition: [TransferPosition] @derivedFrom(field: "sender")
+  updatePosition: [UpdatePosition] @derivedFrom(field: "owner")
+  closeByDex: [CloseByDex] @derivedFrom(field: "owner")
+  liquidUnsafe: [LiquidUnsafe] @derivedFrom(field: "owner")
+  transferOutPosition: [TransferPosition] @derivedFrom(field: "from")
+  transferInPosition: [TransferPosition] @derivedFrom(field: "to")
   confiscatePosition: [ConfiscatePosition] @derivedFrom(field: "owner")
 }
 
@@ -48,7 +49,7 @@ type Collateral @entity {
 
   positions: [Position] @derivedFrom(field: "collateral")
 
-  hourCollateral: [HourCollateral] @derivedFrom(field: "collateral")
+  hourlyCollateral: [HourlyCollateral] @derivedFrom(field: "collateral")
   dailyCollateral: [DailyCollateral] @derivedFrom(field: "collateral")
 
   # history
@@ -60,7 +61,7 @@ type Collateral @entity {
   confiscatePosition: [ConfiscatePosition] @derivedFrom(field: "owner")
 }
 
-type HourCollateral @entity {
+type HourlyCollateral @entity {
   id: ID! # `${tokenname}-${timestamp}`
 
   collateral: Collateral!
@@ -108,9 +109,6 @@ type Position @entity {
 
   depositAmount: BigInt!
   debitAmount: BigInt!
-
-  hourlyData: [HourlyPosition] @derivedFrom(field: "owner")
-  dailyData: [DailyPosition] @derivedFrom(field: "owner")
 
   updateAt: Date!
   updateAtBlock: Block!
@@ -213,7 +211,7 @@ type CollateralParamsHistory @entity {
 type UpdatePosition @entity {
   id: ID! # `extrinshcHash`-`event idx`
 
-  sender: Account!
+  owner: Account! 
   collateral: Collateral!
 
   collateralAdjustment: BigInt!
@@ -224,14 +222,14 @@ type UpdatePosition @entity {
   price: BigInt! # price snapshot
 
   block: Block!
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
   timestamp: Date!
 }
 
 type CloseByDex @entity {
   id: ID! # `extrinshcHash`-`event idx`
 
-  sender: Account!
+  owner: Account!
   collateral: Collateral!
 
   soldAmount: BigInt!
@@ -243,7 +241,7 @@ type CloseByDex @entity {
   price: BigInt! # price snapshot
 
   block: Block!
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
   timestamp: Date!
 }
 
@@ -261,21 +259,19 @@ type LiquidUnsafe @entity {
   price: BigInt! # price snapshot
 
   block: Block!
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
   timestamp: Date!
 }
 
 type TransferPosition @entity {
   id: ID!
 
-  sender: Account!
   collateral: Collateral!
-
   from: Account!
   to: Account!
 
   block: Block!
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
   timestamp: Date!
 }
 
@@ -309,6 +305,6 @@ type UpdateCollateralParams @entity {
   requiredCollateralRatio: BigInt!
 
   block: Block!
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
   timestamp: Date!
 }

@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "yarn build && ./node_modules/.bin/subql-node -f . --debug --timeout=512 --batch-size=100 --port=3123",
+    "start": "yarn build && ./node_modules/.bin/subql-node -f . --timeout=512 --batch-size=50 --port=3123",
     "build": "tsc -b",
     "prepack": "rm -rf dist && npm build",
     "test": "jest",
@@ -26,18 +26,18 @@
     "typescript": "4.2.4"
   },
   "dependencies": {
-    "@acala-network/sdk-core": "^4.0.2-15",
-    "@acala-network/sdk-wallet": "^4.0.2-15",
-    "@acala-network/subql-utils": "0.1.10",
-    "@acala-network/types": "^4.0.2-15",
+    "@acala-network/sdk-core": "^4.0.2-19",
+    "@acala-network/sdk-wallet": "^4.0.2-19",
+    "@acala-network/subql-utils": "0.1.12",
+    "@acala-network/types": "^4.0.2-19",
     "@subql/node": "^0.29.1",
     "dayjs": "^1.10.7"
   },
   "resolutions": {
-    "@acala-network/api": "4.0.2-15",
-    "@acala-network/types": "4.0.2-15",
-    "@acala-network/sdk-core": "4.0.2-15",
-    "@acala-network/sdk-wallet": "4.0.2-15",
+    "@acala-network/api": "4.0.2-19",
+    "@acala-network/types": "4.0.2-19",
+    "@acala-network/sdk-core": "4.0.2-19",
+    "@acala-network/sdk-wallet": "4.0.2-19",
     "@polkadot/api": "^7.1.1",
     "@polkadot/types": "^7.1.1",
     "typescript": "4.2.4"

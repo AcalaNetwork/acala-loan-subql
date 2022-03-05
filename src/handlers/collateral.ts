@@ -1,60 +1,57 @@
-import { forceToCurrencyName } from "@acala-network/sdk-core";
-import { getStartOfHour } from "@acala-network/subql-utils";
-import { CurrencyId } from "@acala-network/types/interfaces";
-import { Block, Collateral, HourCollateral } from "../types";
-import { getCollateral, getDailyCollateral, getHourlyCollateral } from "../utils/record"
+import { Collateral, DailyCollateral, HourlyCollateral } from "../types";
 
-export const updateCollateral = async (
+export const updateCollateral = (
   collateral: Collateral,
   collateralAdjustment: bigint,
   debitAdjustment: bigint
 ) => {
+  collateral.depositAmount = collateral.depositAmount + collateralAdjustment;
   collateral.debitAmount = collateral.debitAmount + debitAdjustment;
-  collateral.depositAmount = collateral.debitAmount + collateralAdjustment;
   collateral.txCount = collateral.txCount + 1;
 }
 
-export const updateHourlyCollateral = async (
-  block: Block,
+export const updateHourlyCollateral = (
   collateral: Collateral,
-  hourly: HourCollateral,
+  hourly: HourlyCollateral,
+  exchangeRate: bigint,
+  depositVolumeUSD: bigint,
+  debitVolumeUSD: bigint,
   depositChanged: bigint,
   debitChanged: bigint,
   depositChangedUSD: bigint,
   debitChangedUSD: bigint
 ) => {
-  const timestamp = getStartOfHour(block.timestamp)
-  const id = `${collateral.id}-${timestamp}`
-  const record = await getHourlyCollateral(id);
-
-  record.collateralId = collateral.id;
-
-  record.depositAmount = collateral.debitAmount;
-  record.debitAmount = collateral.debitAmount;
-  record.depositAmountUSD = 
-  record.debitVolume = record.debitVolume + debitVolume;
-  record.totalDepositVolumeUSD = record.totalDepositVolumeUSD + depositVolumeUSD;
-  record.totalDebitVolumeUSD = record.totalDebitVolumeUSD + debitVolumeUSD;
-  record.txCount = record.txCount + 1;
-  record.timestamp = timestamp;
-  record.debitExchangeRate = await getExchangeRateFromDb(block, token);
-
-  await hourlyCollateral.save()
+  hourly.depositAmount = collateral.depositAmount;
+  hourly.debitAmount = collateral.debitAmount;
+  hourly.depositVolumeUSD = depositVolumeUSD;
+  hourly.debitVolumeUSD = debitVolumeUSD;
+  hourly.depositChanged = hourly.depositChanged + depositChanged
+  hourly.debitChanged = hourly.debitChanged + debitChanged
+  hourly.depositChangedUSD = hourly.depositChangedUSD + depositChangedUSD
+  hourly.debitChangedUSD = hourly.debitChangedUSD + debitChangedUSD
+  hourly.debitExchangeRate = exchangeRate;
+  hourly.txCount = hourly.txCount + 1;
 }
 
-export const updateDailyCollateral = async (block: Block, token: CurrencyId, timestamp: Date, depositVolume: bigint, debitVolume: bigint, depositVolumeUSD: bigint, debitVolumeUSD: bigint) => {
-  const tokenName = forceToCurrencyName(token);
-  const id = `${tokenName}-${timestamp.getTime()}`;
-  const dailyCollateral = await getDailyCollateral(id);
-  dailyCollateral.collateralId = tokenName;
-  dailyCollateral.depositVolume = dailyCollateral.depositVolume + depositVolume;
-  dailyCollateral.debitVolume = dailyCollateral.debitVolume + debitVolume;
-  dailyCollateral.totalDepositVolumeUSD = dailyCollateral.totalDepositVolumeUSD + depositVolumeUSD;
-  dailyCollateral.totalDebitVolumeUSD = dailyCollateral.totalDebitVolumeUSD + debitVolumeUSD;
-  dailyCollateral.txCount = dailyCollateral.txCount + BigInt(1);
-  dailyCollateral.timestamp = timestamp;
-  dailyCollateral.debitExchangeRate = await getExchangeRateFromDb(block, token);
-
-  await dailyCollateral.save()
-  return dailyCollateral;
+export const updateDailyCollateral = (
+  collateral: Collateral,
+  daily: DailyCollateral,
+  exchangeRate: bigint,
+  depositVolumeUSD: bigint,
+  debitVolumeUSD: bigint,
+  depositChanged: bigint,
+  debitChanged: bigint,
+  depositChangedUSD: bigint,
+  debitChangedUSD: bigint
+) => {
+  daily.depositAmount = collateral.depositAmount;
+  daily.debitAmount = collateral.debitAmount;
+  daily.depositVolumeUSD = depositVolumeUSD;
+  daily.debitVolumeUSD = debitVolumeUSD;
+  daily.depositChanged = daily.depositChanged + depositChanged
+  daily.debitChanged = daily.debitChanged + debitChanged
+  daily.depositChangedUSD = daily.depositChangedUSD + depositChangedUSD
+  daily.debitChangedUSD = daily.debitChangedUSD + debitChangedUSD
+  daily.debitExchangeRate = exchangeRate;
+  daily.txCount = daily.txCount + 1;
 }

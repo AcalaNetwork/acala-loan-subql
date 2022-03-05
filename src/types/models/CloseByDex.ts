@@ -16,7 +16,7 @@ export class CloseByDex implements Entity {
 
     public id: string;
 
-    public senderId: string;
+    public ownerId: string;
 
     public collateralId: string;
 
@@ -34,7 +34,7 @@ export class CloseByDex implements Entity {
 
     public blockId: string;
 
-    public extrinsicId: string;
+    public extrinsicId?: string;
 
     public timestamp: Date;
 
@@ -60,9 +60,9 @@ export class CloseByDex implements Entity {
     }
 
 
-    static async getBySenderId(senderId: string): Promise<CloseByDex[] | undefined>{
+    static async getByOwnerId(ownerId: string): Promise<CloseByDex[] | undefined>{
       
-      const records = await store.getByField('CloseByDex', 'senderId', senderId);
+      const records = await store.getByField('CloseByDex', 'ownerId', ownerId);
       return records.map(record => CloseByDex.create(record as CloseByDexProps));
       
     }

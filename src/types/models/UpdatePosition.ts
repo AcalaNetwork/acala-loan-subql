@@ -16,7 +16,7 @@ export class UpdatePosition implements Entity {
 
     public id: string;
 
-    public senderId: string;
+    public ownerId: string;
 
     public collateralId: string;
 
@@ -32,7 +32,7 @@ export class UpdatePosition implements Entity {
 
     public blockId: string;
 
-    public extrinsicId: string;
+    public extrinsicId?: string;
 
     public timestamp: Date;
 
@@ -58,9 +58,9 @@ export class UpdatePosition implements Entity {
     }
 
 
-    static async getBySenderId(senderId: string): Promise<UpdatePosition[] | undefined>{
+    static async getByOwnerId(ownerId: string): Promise<UpdatePosition[] | undefined>{
       
-      const records = await store.getByField('UpdatePosition', 'senderId', senderId);
+      const records = await store.getByField('UpdatePosition', 'ownerId', ownerId);
       return records.map(record => UpdatePosition.create(record as UpdatePositionProps));
       
     }
