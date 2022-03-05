@@ -16,9 +16,9 @@ export class Account implements Entity {
 
     public id: string;
 
-    public address?: string;
+    public address: string;
 
-    public txCount?: bigint;
+    public txCount: number;
 
 
     async save(): Promise<void>{

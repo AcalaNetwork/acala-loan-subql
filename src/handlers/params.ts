@@ -1,10 +1,10 @@
 import { SubstrateEvent } from "@subql/types";
-import { ensureBlock, ensureExtrinsic } from ".";
+import { getBlock, ensureExtrinsic } from ".";
 import { getCollateral, getCollateralParams, getCollateralParamsHistory, getUpdateCollateralParams } from "../utils";
 
 export const updateTokenParams = async (event: SubstrateEvent, token: string, field: string, value: bigint) => {
   const { isExist, record: CollateralParamsNow } = await getCollateralParams(token);
-  const blockData = await ensureBlock(event);
+  const blockData = await getBlock(event);
   const historyId = `${blockData.number}-${token}`;
   await getCollateral(token);
 
@@ -44,7 +44,7 @@ export const updateTokenParams = async (event: SubstrateEvent, token: string, fi
 }
 
 export const createUpdateCollateralParamsHistory = async (event: SubstrateEvent, token: string, maximumTotalDebitValue: bigint, interestRatePerSec: bigint, liquidationRatio: bigint, liquidationPenalty: bigint, requiredCollateralRatio: bigint) => {
-  const blockData = await ensureBlock(event);
+  const blockData = await getBlock(event);
   const extrinshcData = await ensureExtrinsic(event);
 
   await getCollateral(token);

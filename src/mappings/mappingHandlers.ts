@@ -1,5 +1,5 @@
 import { SubstrateEvent } from "@subql/types";
-import { uploadLoainPosition, transferLoan, liquidateUnsafeCDP, updateParams, closeByDex } from "../handlers";
+import { updateLoanPosition, transferLoan, liquidateUnsafeCDP, updateParams, closeByDex } from "../handlers";
 
 export async function handleParamsUpdated(event: SubstrateEvent): Promise<void> {
 	await updateParams(event, 'cdp');
@@ -14,11 +14,11 @@ export async function handleCloseCDPInDebitByDEX(event: SubstrateEvent): Promise
 }
 
 export async function handlePositionUpdated(event: SubstrateEvent): Promise<void> {
-	await uploadLoainPosition(event, false);
+	await updateLoanPosition(event, false);
 }
 
 export async function handleConfiscateCollateralAndDebit(event: SubstrateEvent): Promise<void> {
-	await uploadLoainPosition(event, true);
+	await updateLoanPosition(event, true);
 }
 
 export async function handleTransferLoan(event: SubstrateEvent): Promise<void> {

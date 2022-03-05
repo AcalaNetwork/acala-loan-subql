@@ -16,21 +16,29 @@ export class DailyCollateral implements Entity {
 
     public id: string;
 
-    public collateralId?: string;
+    public collateralId: string;
 
-    public depositVolume?: bigint;
+    public txCount: number;
 
-    public debitVolume?: bigint;
+    public depositAmount: bigint;
 
-    public totalDepositVolumeUSD?: bigint;
+    public debitAmount: bigint;
 
-    public totalDebitVolumeUSD?: bigint;
+    public depositVolumeUSD: bigint;
 
-    public debitExchangeRate?: bigint;
+    public debitVolumeUSD: bigint;
 
-    public timestamp?: Date;
+    public depositChanged: bigint;
 
-    public txCount?: bigint;
+    public debitChanged: bigint;
+
+    public depositChangedUSD: bigint;
+
+    public debitChangedUSD: bigint;
+
+    public debitExchangeRate: bigint;
+
+    public timestamp: Date;
 
 
     async save(): Promise<void>{

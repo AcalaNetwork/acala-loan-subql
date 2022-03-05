@@ -1,7 +1,7 @@
 import { FixedPointNumber, forceToCurrencyName } from "@acala-network/sdk-core";
 import { AccountId, Balance, CurrencyId } from "@acala-network/types/interfaces";
 import { SubstrateEvent } from "@subql/types";
-import { ensureBlock, ensureExtrinsic } from ".";
+import { getBlock, ensureExtrinsic } from ".";
 import { getAccount, getCloseByDex, getCollateral, queryPrice } from "../utils";
 
 export const closeByDex = async (event: SubstrateEvent) => {
@@ -10,7 +10,7 @@ export const closeByDex = async (event: SubstrateEvent) => {
   const owner = await getAccount(account.toString());
 	const token = await getCollateral(forceToCurrencyName(collateral));
   const extrinshcData = await ensureExtrinsic(event);
-  const blockData = await ensureBlock(event);
+  const blockData = await getBlock(event);
 
   const id = `${blockData.hash}-${event.event.index.toString()}`;
   const price = await queryPrice(event, token.name);

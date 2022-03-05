@@ -1,9 +1,9 @@
 import { FixedPointNumber as FN, forceToCurrencyName } from "@acala-network/sdk-core";
 import { Option } from "@polkadot/types";
 import { TimestampedValue } from '@open-web3/orml-types/interfaces';
-import { getPriceBoundle } from "./record";
+import { getPriceBundle } from "./record";
 import { SubstrateEvent } from "@subql/types";
-import { ensureBlock } from "../handlers";
+import { getBlock } from "../handlers";
 import { CurrencyId } from "@acala-network/types/interfaces";
 import { getTokenDecimals } from ".";
 
@@ -50,9 +50,9 @@ export const circulatePrice = async (currency: string): Promise<FN> => {
 }
 
 export const queryPrice = async (event: SubstrateEvent, token: string) => {
-  const {id: blockId, number} = await ensureBlock(event);
+  const {id: blockId, number} = await getBlock(event);
   const id = `${number}-${token}`;
-  const {isExist, record} = await getPriceBoundle(id);
+  const {isExist, record} = await getPriceBundle(id);
   if(isExist) return new FN(record.price);
   else {
     const price = await circulatePrice(token)

@@ -16,23 +16,31 @@ export class DailyPosition implements Entity {
 
     public id: string;
 
-    public ownerId?: string;
+    public ownerId: string;
 
-    public collateralId?: string;
+    public collateralId: string;
 
-    public depositVolume?: bigint;
+    public depositAmount: bigint;
 
-    public debitVolume?: bigint;
+    public debitAmount: bigint;
 
-    public depositVolumeUSD?: bigint;
+    public depositVolumeUSD: bigint;
 
-    public debitVolumeUSD?: bigint;
+    public debitVolumeUSD: bigint;
 
-    public debitExchangeRate?: bigint;
+    public depositChanged: bigint;
 
-    public timestamp?: Date;
+    public debitChanged: bigint;
 
-    public txCount?: bigint;
+    public depositChangedUSD: bigint;
+
+    public debitChangedUSD: bigint;
+
+    public debitExchangeRate: bigint;
+
+    public timestamp: Date;
+
+    public txCount: number;
 
 
     async save(): Promise<void>{

@@ -16,7 +16,15 @@ export class Extrinsic implements Entity {
 
     public id: string;
 
-    public hash?: string;
+    public senderId: string;
+
+    public hash: string;
+
+    public method: string;
+
+    public section: string;
+
+    public raw: string;
 
     public blockId?: string;
 
@@ -41,6 +49,13 @@ export class Extrinsic implements Entity {
         }
     }
 
+
+    static async getBySenderId(senderId: string): Promise<Extrinsic[] | undefined>{
+      
+      const records = await store.getByField('Extrinsic', 'senderId', senderId);
+      return records.map(record => Extrinsic.create(record as ExtrinsicProps));
+      
+    }
 
     static async getByBlockId(blockId: string): Promise<Extrinsic[] | undefined>{
       

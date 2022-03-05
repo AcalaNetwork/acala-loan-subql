@@ -12,7 +12,7 @@
     "@open-web3/orml-types" "^1.0.2-3"
     "@polkadot/api-derive" "^7.1.1"
 
-"@acala-network/api@4.0.2-15", "@acala-network/api@^4.0.1":
+"@acala-network/api@4.0.2-15", "@acala-network/api@4.0.2-18", "@acala-network/api@^4.0.2-18":
   version "4.0.2-15"
   resolved "https://registry.yarnpkg.com/@acala-network/api/-/api-4.0.2-15.tgz#28f7958c2b33b2333a8a14d314536cb82fda515d"
   integrity sha512-mDgNHkQlpt0Wc46xL2BUEMXmJZFl9azMo/c2+PQ+gFjLAMcQxzyQ9WC/+aU8o5YGMYG7uXrgFOyRfQqQwX0uvw==
@@ -24,7 +24,7 @@
     "@polkadot/api" "^7.1.1"
     "@polkadot/rpc-core" "^7.1.1"
 
-"@acala-network/sdk-core@4.0.2-15", "@acala-network/sdk-core@^4.0.1-15", "@acala-network/sdk-core@^4.0.2-15":
+"@acala-network/sdk-core@4.0.2-15", "@acala-network/sdk-core@^4.0.2-15", "@acala-network/sdk-core@^4.0.2-18":
   version "4.0.2-15"
   resolved "https://registry.yarnpkg.com/@acala-network/sdk-core/-/sdk-core-4.0.2-15.tgz#397b29b519f8d9bacd646f2d6a2d034c78f4d7ff"
   integrity sha512-PsP/IbbCgNm7iUUj3L8tTwo0sjWAyflCdVjvWHY4JLFhSiS08sFoURNByT4AOxvs5xht+FeIJT7O9B1djb+wXg==
@@ -46,14 +46,32 @@
     lodash "^4.17.20"
     rxjs "^7.4.0"
 
-"@acala-network/subql-utils@0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@acala-network/subql-utils/-/subql-utils-0.1.8.tgz#2ae900934c39c2a430e62889fe5b053649d55155"
-  integrity sha512-TSDgcWzdz9w22nYZWsPNz4Y6kcAJSN4JATHvWzw0Sau9XmxNbqYQ1ESQtj8L6OcCflfLAfqoLE3LX02PhahBrw==
+"@acala-network/sdk@^4.0.2-18":
+  version "4.0.2-18"
+  resolved "https://registry.yarnpkg.com/@acala-network/sdk/-/sdk-4.0.2-18.tgz#260027a8e48ce203e675a4382bb418a952d69eb3"
+  integrity sha512-9R6k4z+q9rFCT6v9TTA2P9sTqckstbs3YFP7wnvu+HTxYfy0iJgifLNwKLS2LMQmB+FpLiFT03Gr+1wSB7IFdw==
   dependencies:
-    "@acala-network/api" "^4.0.1"
-    "@acala-network/sdk-core" "^4.0.1-15"
-    "@acala-network/types" "^4.0.1"
+    "@acala-network/api" "4.0.2-18"
+    "@acala-network/type-definitions" "4.0.2-18"
+    "@polkadot/api" "^7.1.1"
+    "@polkadot/types" "^7.1.1"
+    "@types/events" "^3.0.0"
+    axios "^0.24.0"
+    bignumber.js "^9.0.0"
+    cross-fetch "^3.1.4"
+    events "^3.2.0"
+    lodash "^4.17.20"
+    rxjs "^7.4.0"
+
+"@acala-network/subql-utils@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@acala-network/subql-utils/-/subql-utils-0.1.10.tgz#ce184cb9546060ce33bab5f036603a0e8724c125"
+  integrity sha512-OkhjqF79ak6hxQsSpYadSigsdDIy3fjWAd3lF/vjB1onByGMA+0RRieleIVpqMcsf4Y0ufVoh9qnZS1Si2hcoQ==
+  dependencies:
+    "@acala-network/api" "^4.0.2-18"
+    "@acala-network/sdk" "^4.0.2-18"
+    "@acala-network/sdk-core" "^4.0.2-18"
+    "@acala-network/types" "^4.0.2-18"
     "@polkadot/api" "^7.10.1"
     "@polkadot/dev" "^0.65.77"
     "@subql/node" "^0.29.1"
@@ -67,7 +85,14 @@
   dependencies:
     "@open-web3/orml-type-definitions" "^1.0.2-3"
 
-"@acala-network/types@4.0.2-15", "@acala-network/types@^4.0.1", "@acala-network/types@^4.0.2-15":
+"@acala-network/type-definitions@4.0.2-18":
+  version "4.0.2-18"
+  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-4.0.2-18.tgz#85e0ed5389cd1d1adf0eaa5ec2b02b81009ebf00"
+  integrity sha512-TT01rDV4b2NPqf1Uue1Ddth5nU/D45OKymzsjExK3/6bJzlHL8fD3jPxsns5/LYMuksM4gXy2Xi0zL0S2orfWg==
+  dependencies:
+    "@open-web3/orml-type-definitions" "^1.0.2-3"
+
+"@acala-network/types@4.0.2-15", "@acala-network/types@^4.0.2-15", "@acala-network/types@^4.0.2-18":
   version "4.0.2-15"
   resolved "https://registry.yarnpkg.com/@acala-network/types/-/types-4.0.2-15.tgz#15989b562350ed2904465498a6ccc19c43c1afbc"
   integrity sha512-F0BJems+zEQQIbzGfSqnc42c9KtCEHI83IY48Wh0pEB0S/3JeT9JMHr/M3LpkV30pCCfUiaqC8wNOZkxNdInaQ==
@@ -4561,6 +4586,13 @@ cron@1.7.2:
   dependencies:
     moment-timezone "^0.5.x"
 
+cross-fetch@^3.1.4:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.5.tgz#e1389f44d9e7ba767907f7af8454787952ab534f"
+  integrity sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==
+  dependencies:
+    node-fetch "2.6.7"
+
 cross-spawn@^6.0.0, cross-spawn@^6.0.5:
   version "6.0.5"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-6.0.5.tgz#4a5ec7c64dfae22c3a14124dbacdee846d80cbc4"
@@ -8788,7 +8820,7 @@ nock@^13.2.4:
     lodash.set "^4.3.2"
     propagate "^2.0.0"
 
-node-fetch@^2.6.0, node-fetch@^2.6.7, "node-fetch@https://registry.npmjs.org/@achingbrain/node-fetch/-/node-fetch-2.6.7.tgz":
+node-fetch@2.6.7, node-fetch@^2.6.0, node-fetch@^2.6.7, "node-fetch@https://registry.npmjs.org/@achingbrain/node-fetch/-/node-fetch-2.6.7.tgz":
   version "2.6.7"
   resolved "https://registry.npmjs.org/@achingbrain/node-fetch/-/node-fetch-2.6.7.tgz#1b5d62978f2ed07b99444f64f0df39f960a6d34d"
 
@@ -11433,25 +11465,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@4.2.4:
+typescript@4.2.4, typescript@^3.9.10, typescript@^3.9.5, typescript@^3.9.7, typescript@^4.4.4, typescript@^4.5.5:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.4.tgz#8610b59747de028fda898a8aef0e103f156d0961"
   integrity sha512-V+evlYHZnQkaz8TRBuxTA92yZBPotr5H+WhQ7bD3hZUndx5tGOa1fuCgeSjxAzM1RiN5IzvadIXTVefuuwZCRg==
-
-typescript@^3.9.10, typescript@^3.9.5, typescript@^3.9.7:
-  version "3.9.10"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
-  integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
-
-typescript@^4.4.4:
-  version "4.5.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.4.tgz#a17d3a0263bf5c8723b9c52f43c5084edf13c2e8"
-  integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
-
-typescript@^4.5.5:
-  version "4.5.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.5.tgz#d8c953832d28924a9e3d37c73d729c846c5896f3"
-  integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
 
 uglify-js@^3.1.4:
   version "3.14.5"

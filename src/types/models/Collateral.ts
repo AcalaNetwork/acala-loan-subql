@@ -16,15 +16,15 @@ export class Collateral implements Entity {
 
     public id: string;
 
-    public name?: string;
+    public name: string;
 
-    public decimals?: number;
+    public decimals: number;
 
-    public totalDepositVolume?: bigint;
+    public depositAmount: bigint;
 
-    public totalDebitVolume?: bigint;
+    public debitAmount: bigint;
 
-    public txCount?: number;
+    public txCount: number;
 
 
     async save(): Promise<void>{

@@ -16,21 +16,25 @@ export class CollateralParamsHistory implements Entity {
 
     public id: string;
 
-    public collateralId?: string;
+    public collateralId: string;
 
-    public maximumTotalDebitValue?: bigint;
+    public maximumTotalDebitValue: bigint;
 
-    public interestRatePerSec?: bigint;
+    public interestRatePerSec: bigint;
 
-    public liquidationRatio?: bigint;
+    public liquidationRatio: bigint;
 
-    public liquidationPenalty?: bigint;
+    public liquidationPenalty: bigint;
 
-    public requiredCollateralRatio?: bigint;
+    public requiredCollateralRatio: bigint;
 
-    public startAtBlockId?: string;
+    public startAtBlockId: string;
 
-    public endAtBlockId?: string;
+    public endAtBlockId: string;
+
+    public startAt: Date;
+
+    public endAt: Date;
 
 
     async save(): Promise<void>{

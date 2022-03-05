@@ -16,13 +16,13 @@ export {DailyCollateral} from "./DailyCollateral"
 
 export {Position} from "./Position"
 
-export {HourPosition} from "./HourPosition"
+export {HourlyPosition} from "./HourlyPosition"
 
 export {DailyPosition} from "./DailyPosition"
 
-export {ExchangeBoundle} from "./ExchangeBoundle"
+export {ExchangeBundle} from "./ExchangeBundle"
 
-export {PriceBoundle} from "./PriceBoundle"
+export {PriceBundle} from "./PriceBundle"
 
 export {CollateralParams} from "./CollateralParams"
 

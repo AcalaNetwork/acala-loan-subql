@@ -16,17 +16,19 @@ export class ConfiscatePosition implements Entity {
 
     public id: string;
 
+    public senderId?: string;
+
     public ownerId?: string;
 
     public collateralId?: string;
 
-    public collateralAjustment?: bigint;
+    public collateralAdjustment?: bigint;
 
-    public debitAjustment?: bigint;
+    public debitAdjustment?: bigint;
 
-    public collateralAjustmentUSD?: bigint;
+    public collateralAdjustmentUSD?: bigint;
 
-    public debitAjustmentUSD?: bigint;
+    public debitAdjustmentUSD?: bigint;
 
     public blockId?: string;
 
@@ -53,6 +55,13 @@ export class ConfiscatePosition implements Entity {
         }
     }
 
+
+    static async getBySenderId(senderId: string): Promise<ConfiscatePosition[] | undefined>{
+      
+      const records = await store.getByField('ConfiscatePosition', 'senderId', senderId);
+      return records.map(record => ConfiscatePosition.create(record as ConfiscatePositionProps));
+      
+    }
 
     static async getByOwnerId(ownerId: string): Promise<ConfiscatePosition[] | undefined>{
       

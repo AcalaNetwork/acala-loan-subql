@@ -16,15 +16,19 @@ export class TransferPosition implements Entity {
 
     public id: string;
 
-    public collateralId?: string;
+    public senderId: string;
 
-    public fromId?: string;
+    public collateralId: string;
 
-    public toId?: string;
+    public fromId: string;
 
-    public blockId?: string;
+    public toId: string;
 
-    public extrinsicId?: string;
+    public blockId: string;
+
+    public extrinsicId: string;
+
+    public timestamp: Date;
 
 
     async save(): Promise<void>{
@@ -47,6 +51,13 @@ export class TransferPosition implements Entity {
         }
     }
 
+
+    static async getBySenderId(senderId: string): Promise<TransferPosition[] | undefined>{
+      
+      const records = await store.getByField('TransferPosition', 'senderId', senderId);
+      return records.map(record => TransferPosition.create(record as TransferPositionProps));
+      
+    }
 
     static async getByCollateralId(collateralId: string): Promise<TransferPosition[] | undefined>{
       

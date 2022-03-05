@@ -16,19 +16,27 @@ export class LiquidUnsafe implements Entity {
 
     public id: string;
 
-    public ownerId?: string;
+    public senderId: string;
 
-    public collateralId?: string;
+    public ownerId: string;
 
-    public collateralVolume?: bigint;
+    public collateralId: string;
 
-    public badDebitVolumeUSD?: bigint;
+    public collateralAmount: bigint;
 
-    public liquidationStrategy?: string;
+    public collateralVolumeUSD: bigint;
 
-    public blockId?: string;
+    public badDebitVolumeUSD: bigint;
 
-    public extrinsicId?: string;
+    public liquidationStrategy: string;
+
+    public price: bigint;
+
+    public blockId: string;
+
+    public extrinsicId: string;
+
+    public timestamp: Date;
 
 
     async save(): Promise<void>{
@@ -51,6 +59,13 @@ export class LiquidUnsafe implements Entity {
         }
     }
 
+
+    static async getBySenderId(senderId: string): Promise<LiquidUnsafe[] | undefined>{
+      
+      const records = await store.getByField('LiquidUnsafe', 'senderId', senderId);
+      return records.map(record => LiquidUnsafe.create(record as LiquidUnsafeProps));
+      
+    }
 
     static async getByOwnerId(ownerId: string): Promise<LiquidUnsafe[] | undefined>{
       

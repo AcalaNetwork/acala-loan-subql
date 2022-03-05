@@ -16,15 +16,19 @@ export class Position implements Entity {
 
     public id: string;
 
-    public ownerId?: string;
+    public ownerId: string;
 
-    public collateralId?: string;
+    public collateralId: string;
 
-    public depositVolume?: bigint;
+    public txCount: number;
 
-    public debitVolume?: bigint;
+    public depositAmount: bigint;
 
-    public updateAtId?: string;
+    public debitAmount: bigint;
+
+    public updateAt: Date;
+
+    public updateAtBlockId: string;
 
 
     async save(): Promise<void>{
@@ -62,9 +66,9 @@ export class Position implements Entity {
       
     }
 
-    static async getByUpdateAtId(updateAtId: string): Promise<Position[] | undefined>{
+    static async getByUpdateAtBlockId(updateAtBlockId: string): Promise<Position[] | undefined>{
       
-      const records = await store.getByField('Position', 'updateAtId', updateAtId);
+      const records = await store.getByField('Position', 'updateAtBlockId', updateAtBlockId);
       return records.map(record => Position.create(record as PositionProps));
       
     }

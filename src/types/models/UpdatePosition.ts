@@ -16,21 +16,25 @@ export class UpdatePosition implements Entity {
 
     public id: string;
 
-    public ownerId?: string;
+    public senderId: string;
 
-    public collateralId?: string;
+    public collateralId: string;
 
-    public collateralAjustment?: bigint;
+    public collateralAdjustment: bigint;
 
-    public debitAjustment?: bigint;
+    public debitAdjustment: bigint;
 
-    public collateralAjustmentUSD?: bigint;
+    public collateralAdjustmentUSD: bigint;
 
-    public debitAjustmentUSD?: bigint;
+    public debitAdjustmentUSD: bigint;
 
-    public blockId?: string;
+    public price: bigint;
 
-    public extrinsicId?: string;
+    public blockId: string;
+
+    public extrinsicId: string;
+
+    public timestamp: Date;
 
 
     async save(): Promise<void>{
@@ -54,9 +58,9 @@ export class UpdatePosition implements Entity {
     }
 
 
-    static async getByOwnerId(ownerId: string): Promise<UpdatePosition[] | undefined>{
+    static async getBySenderId(senderId: string): Promise<UpdatePosition[] | undefined>{
       
-      const records = await store.getByField('UpdatePosition', 'ownerId', ownerId);
+      const records = await store.getByField('UpdatePosition', 'senderId', senderId);
       return records.map(record => UpdatePosition.create(record as UpdatePositionProps));
       
     }

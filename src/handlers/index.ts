@@ -1,4 +1,4 @@
-export * from './uploadLoainPosition';
+export * from './updateLoanPosition';
 export * from './transferLoan';
 export * from './liquidateUnsafeCDP';
 export * from './event';
