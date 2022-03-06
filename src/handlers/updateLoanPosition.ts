@@ -11,6 +11,7 @@ export const updateLoanPosition = async (
   collateralName: string,
   depositChanged: bigint,
   debitChanged: bigint, 
+  shouldUpdatePosition = true
 ) => {
   const timestamp = rawBlock.timestamp;
   const startHour = getStartOfHour(timestamp);
@@ -33,70 +34,75 @@ export const updateLoanPosition = async (
 
 
   // update collateral first
-  updateCollateral(collateral, depositChanged, debitChanged);
+  if (shouldUpdatePosition) {
+    updateCollateral(collateral, depositChanged, debitChanged);
+  }
 
   const depositVolumeUSD = getVolumeUSD(collateral.depositAmount, collateral.decimals, priceBundle.price)
   const debitVolumeUSD = getVolumeUSD(collateral.debitAmount, stableCoin.decimals, exchangeBundle.debitExchangeRate)
 
   // update collatearl daily/hourly record
-  updateHourlyCollateral(
-    collateral,
-    hourlyCollateral,
-    exchangeBundle.debitExchangeRate,
-    depositVolumeUSD,
-    debitVolumeUSD,
-    depositChanged,
-    debitChanged,
-    depositChangedUSD,
-    debitChangedUSD
-  );
+  if (shouldUpdatePosition) {
+    updateHourlyCollateral(
+      collateral,
+      hourlyCollateral,
+      exchangeBundle.debitExchangeRate,
+      depositVolumeUSD,
+      debitVolumeUSD,
+      depositChanged,
+      debitChanged,
+      depositChangedUSD,
+      debitChangedUSD
+    );
+    updateDailyCollateral(
+      collateral,
+      dailyCollateral,
+      exchangeBundle.debitExchangeRate,
+      depositVolumeUSD,
+      debitVolumeUSD,
+      depositChanged,
+      debitChanged,
+      depositChangedUSD,
+      debitChangedUSD
+    );
 
-  updateDailyCollateral(
-    collateral,
-    dailyCollateral,
-    exchangeBundle.debitExchangeRate,
-    depositVolumeUSD,
-    debitVolumeUSD,
-    depositChanged,
-    debitChanged,
-    depositChangedUSD,
-    debitChangedUSD
-  );
-
-  // update user position
-  updatePosition(
-    position,
-    block,
-    depositChanged,
-    debitChanged
-  )
+    // update user position
+    updatePosition(
+      position,
+      block,
+      depositChanged,
+      debitChanged
+    )
+  }
 
   const depositVolumeUSDInPosition = getVolumeUSD(position.depositAmount, collateral.decimals, priceBundle.price);
   const debitVolumeUSDInPosition = getVolumeUSD(position.debitAmount, stableCoin.decimals, exchangeBundle.debitExchangeRate);
 
-  updateHourlyPosition(
-    hourlyPosition,
-    position,
-    exchangeBundle.debitExchangeRate,
-    depositVolumeUSDInPosition,
-    debitVolumeUSDInPosition,
-    depositChanged,
-    debitChanged,
-    depositChangedUSD,
-    debitChangedUSD
-  )
+  if (shouldUpdatePosition) {
+    updateHourlyPosition(
+      hourlyPosition,
+      position,
+      exchangeBundle.debitExchangeRate,
+      depositVolumeUSDInPosition,
+      debitVolumeUSDInPosition,
+      depositChanged,
+      debitChanged,
+      depositChangedUSD,
+      debitChangedUSD
+    )
 
-  updateDailyPosition(
-    dailyPosition,
-    position,
-    exchangeBundle.debitExchangeRate,
-    depositVolumeUSDInPosition,
-    debitVolumeUSDInPosition,
-    depositChanged,
-    debitChanged,
-    depositChangedUSD,
-    debitChangedUSD
-  )
+    updateDailyPosition(
+      dailyPosition,
+      position,
+      exchangeBundle.debitExchangeRate,
+      depositVolumeUSDInPosition,
+      debitVolumeUSDInPosition,
+      depositChanged,
+      debitChanged,
+      depositChangedUSD,
+      debitChangedUSD
+    )
+  }
 
   owner.txCount = owner.txCount + 1;
   position.updateAt = block.timestamp;
@@ -151,13 +157,20 @@ export async function handleConfiscate (event: SubstrateEvent) {
   const depositChanged = -BigInt(_collateralChanged)
   const debitChanged = -BigInt(_debitChanged)
 
+  // should update position in the the old version beacuse confiscate will not create PositionUpdated event
+  const shouldUpdate = !event.extrinsic.events.find((item) => {
+    return item.event.section === 'loans' && item.event.method === 'PositionUpdated';
+  })
+
   const data = await updateLoanPosition(
     event.block,
     owner.toString(),
     forceToCurrencyName(collateral),
     depositChanged,
-    debitChanged
+    debitChanged,
+    shouldUpdate
   );
+
   await createConfiscatePositionHistory(
     event,
     data.owner,

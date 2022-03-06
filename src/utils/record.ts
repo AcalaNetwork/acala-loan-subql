@@ -355,6 +355,7 @@ export const getCloseByDex = async (id: string) => {
     record.refundVolumeUSD = BigInt(0);
     record.blockId = '1';
     record.extrinsicId = '';
+    record.price = BigInt(0);
     record.timestamp = new Date()
   }
 
@@ -375,6 +376,7 @@ export const getLiquidUnsafe = async (id: string) => {
     record.liquidationStrategy = '';
     record.blockId = '1';
     record.extrinsicId = '';
+    record.price = BigInt(0);
     record.timestamp = new Date()
   }
 

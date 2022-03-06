@@ -20,6 +20,7 @@ export const closeByDex = async (event: SubstrateEvent) => {
   history.debitVolumeUSD = BigInt(debit_value.toString());
   history.soldVolumeUSD = getVolumeUSD(history.soldAmount, token.decimals, priceBundle.price);
   history.refundVolumeUSD = getVolumeUSD(history.refundAmount, token.decimals, priceBundle.price);
+  history.price = priceBundle.price;
   history.blockId = block.id;
 
   if (event.extrinsic) {
@@ -30,6 +31,5 @@ export const closeByDex = async (event: SubstrateEvent) => {
 
   owner.txCount = owner.txCount + 1;
 
-  await owner.save();
   await history.save();
 }
