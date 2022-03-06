@@ -14,7 +14,6 @@ import {
   Position,
   PriceBundle,
   TransferPosition,
-  UpdateCollateralParams,
   UpdatePosition,
   ConfiscatePosition,
   CloseByDex,
@@ -291,7 +290,7 @@ export const getCollateralParams = async (id: string) => {
     record.liquidationPenalty = BigInt(0);
     record.requiredCollateralRatio = BigInt(0);
     record.updateAtBlockId = '1';
-    record.updateAt = new Date();
+    record.updateAt = new Date(0);
   }
 
   return record
@@ -312,8 +311,8 @@ export const getCollateralParamsHistory = async (collateral: string, block: stri
     record.requiredCollateralRatio = BigInt(0);
     record.startAtBlockId = '';
     record.endAtBlockId = '';
-    record.startAt = new Date()
-    record.endAt = new Date()
+    record.startAt = new Date(0)
+    record.endAt = new Date(0)
   }
 
   return record;
@@ -335,7 +334,7 @@ export const getUpdatePosition = async (id: string) => {
     record.debitAdjustmentUSD = BigInt(0);
     record.price = BigInt(0);
     record.extrinsicId = ''
-    record.timestamp = new Date()
+    record.timestamp = new Date(0)
   }
 
   return record;
@@ -356,7 +355,7 @@ export const getCloseByDex = async (id: string) => {
     record.blockId = '1';
     record.extrinsicId = '';
     record.price = BigInt(0);
-    record.timestamp = new Date()
+    record.timestamp = new Date(0)
   }
 
   return record;
@@ -377,7 +376,7 @@ export const getLiquidUnsafe = async (id: string) => {
     record.blockId = '1';
     record.extrinsicId = '';
     record.price = BigInt(0);
-    record.timestamp = new Date()
+    record.timestamp = new Date(0)
   }
 
   return record;
@@ -399,28 +398,6 @@ export const getTransferPosition = async (id: string) => {
     return record;
   }
 }
-
-export const getUpdateCollateralParams = async (id: string) => {
-  let record = await UpdateCollateralParams.get(id);
-
-  if (!record) {
-    record = new UpdateCollateralParams(id);
-
-    record.senderId = '';
-    record.collateralId = '';
-    record.interestRatePerSec = BigInt(0);
-    record.liquidationPenalty = BigInt(0);
-    record.liquidationRatio = BigInt(0);
-    record.maximumTotalDebitValue = BigInt(0);
-    record.requiredCollateralRatio = BigInt(0);
-    record.blockId = '1';
-    record.extrinsicId = '';
-    record.timestamp = new Date()
-  }
-
-  return record;
-}
-
 
 export const getConfiscatePosition = async (id: string) => {
   let record = await ConfiscatePosition.get(id);

@@ -38,5 +38,3 @@ export {TransferPosition} from "./TransferPosition"
 
 export {ConfiscatePosition} from "./ConfiscatePosition"
 
-export {UpdateCollateralParams} from "./UpdateCollateralParams"
-

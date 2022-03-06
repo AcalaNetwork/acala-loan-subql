@@ -57,7 +57,6 @@ type Collateral @entity {
   closeByDex: [CloseByDex] @derivedFrom(field: "collateral")
   liquidUnsafe: [LiquidUnsafe] @derivedFrom(field: "collateral")
   transferPosition: [TransferPosition] @derivedFrom(field: "collateral")
-  updateParams: [UpdateCollateralParams] @derivedFrom(field: "collateral")
   confiscatePosition: [ConfiscatePosition] @derivedFrom(field: "owner")
 }
 
@@ -290,21 +289,4 @@ type ConfiscatePosition @entity {
 
   block: Block
   extrinsic: Extrinsic
-}
-
-type UpdateCollateralParams @entity {
-  id: ID! # `${block}-${tokenname}`
-
-  sender: Account!
-  collateral: Collateral!
-
-  maximumTotalDebitValue: BigInt!
-  interestRatePerSec: BigInt!
-  liquidationRatio: BigInt!
-  liquidationPenalty: BigInt!
-  requiredCollateralRatio: BigInt!
-
-  block: Block!
-  extrinsic: Extrinsic
-  timestamp: Date!
 }
