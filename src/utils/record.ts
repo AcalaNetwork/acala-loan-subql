@@ -61,7 +61,7 @@ export const getBlockOne = async () => {
 }
 
 export const getExtrinsic = async (extrinsic: SubstrateExtrinsic) => {
-  const id = extrinsic.extrinsic.toString();
+  const id = extrinsic.extrinsic.hash.toString();
 
   let record = await Extrinsic.get(id);
 
