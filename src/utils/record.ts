@@ -333,6 +333,7 @@ export const getUpdatePosition = async (id: string) => {
     record.collateralAdjustmentUSD = BigInt(0);
     record.debitAdjustmentUSD = BigInt(0);
     record.price = BigInt(0);
+    record.debitExchangeRate = BigInt(0)
     record.extrinsicId = ''
     record.timestamp = new Date(0)
   }
@@ -355,6 +356,7 @@ export const getCloseByDex = async (id: string) => {
     record.blockId = '1';
     record.extrinsicId = '';
     record.price = BigInt(0);
+    record.debitExchangeRate = BigInt(0)
     record.timestamp = new Date(0)
   }
 
@@ -376,6 +378,7 @@ export const getLiquidUnsafe = async (id: string) => {
     record.blockId = '1';
     record.extrinsicId = '';
     record.price = BigInt(0);
+    record.debitExchangeRate = BigInt(0)
     record.timestamp = new Date(0)
   }
 

@@ -218,7 +218,9 @@ type UpdatePosition @entity {
 
   collateralAdjustmentUSD: BigInt!
   debitAdjustmentUSD: BigInt!
+
   price: BigInt! # price snapshot
+  debitExchangeRate: BigInt! # debit exchange rate snapshot
 
   block: Block!
   extrinsic: Extrinsic
@@ -237,7 +239,9 @@ type CloseByDex @entity {
   debitVolumeUSD: BigInt!
   soldVolumeUSD: BigInt!
   refundVolumeUSD: BigInt!
+
   price: BigInt! # price snapshot
+  debitExchangeRate: BigInt! # debit exchange rate snapshot
 
   block: Block!
   extrinsic: Extrinsic
@@ -256,6 +260,7 @@ type LiquidUnsafe @entity {
   badDebitVolumeUSD: BigInt!
   liquidationStrategy: String!
   price: BigInt! # price snapshot
+  debitExchangeRate: BigInt! # debit exchange rate snapshot
 
   block: Block!
   extrinsic: Extrinsic
@@ -288,5 +293,6 @@ type ConfiscatePosition @entity {
   debitAdjustmentUSD: BigInt
 
   block: Block
+  timestamp: Date
   extrinsic: Extrinsic
 }

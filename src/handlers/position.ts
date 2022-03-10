@@ -69,7 +69,8 @@ export const createUpdatePositionHistroy = async (
   debitChanged: bigint,
   depositChangedUSD: bigint,
   debitChangedUSD: bigint,
-  price: bigint
+  price: bigint,
+  debitExchangeRate: bigint
 ) => {
   const collateral = await getCollateral(collateralName);
   const block = await getBlock(event.block);
@@ -77,12 +78,13 @@ export const createUpdatePositionHistroy = async (
 
   history.ownerId = owner.id;
   history.collateralId = collateral.id;
-  history.blockId = block.id;
   history.collateralAdjustment = depositChanged;
   history.debitAdjustment = debitChanged;
   history.collateralAdjustmentUSD = depositChangedUSD;
   history.debitAdjustmentUSD = debitChangedUSD;
   history.price = price;
+  history.debitExchangeRate = debitExchangeRate;
+  history.blockId = block.id;
   history.timestamp = block.timestamp;
 
   if (event.extrinsic) {
@@ -106,13 +108,15 @@ export const createConfiscatePositionHistory = async (
   const historyId = `${block.id}-${event.event.index.toString()}`;
   const history = await getConfiscatePosition(historyId);
 
-  history.blockId = block.id;
   history.ownerId = owner.id
   history.collateralId = collateral.id;
   history.collateralAdjustment = depositChanged;
   history.debitAdjustment = debitChanged;
   history.collateralAdjustmentUSD = depositChangedUSD;
   history.debitAdjustmentUSD = debitChangedUSD;
+  history.blockId = block.id;
+  history.timestamp = block.timestamp;
+
 
   if (event.extrinsic) {
     const extrinsic = await getExtrinsic(event.extrinsic);

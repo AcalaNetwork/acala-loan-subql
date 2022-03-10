@@ -1,7 +1,7 @@
 import { forceToCurrencyName } from "@acala-network/sdk-core";
 import { AccountId, Balance, CurrencyId } from "@acala-network/types/interfaces";
 import { SubstrateEvent } from "@subql/types";
-import { getAccount, getBlock, getCloseByDex, getCollateral, getExtrinsic, getPriceBundle } from "../utils";
+import { getAccount, getBlock, getCloseByDex, getCollateral, getExchangeBundle, getExtrinsic, getPriceBundle } from "../utils";
 import { getVolumeUSD } from '../utils/math';
 
 export const closeByDex = async (event: SubstrateEvent) => {
@@ -11,6 +11,7 @@ export const closeByDex = async (event: SubstrateEvent) => {
 	const token = await getCollateral(forceToCurrencyName(collateral));
   const block = await getBlock(event.block);
   const priceBundle = await getPriceBundle(token.name, event.block);
+  const exchangeRateBundle = await getExchangeBundle(token.name, event.block);
   const history = await getCloseByDex(`${block.id}-${event.event.index.toString()}`);
 
   history.ownerId = owner.id;
@@ -21,7 +22,9 @@ export const closeByDex = async (event: SubstrateEvent) => {
   history.soldVolumeUSD = getVolumeUSD(history.soldAmount, token.decimals, priceBundle.price);
   history.refundVolumeUSD = getVolumeUSD(history.refundAmount, token.decimals, priceBundle.price);
   history.price = priceBundle.price;
+  history.debitExchangeRate = exchangeRateBundle.debitExchangeRate;
   history.blockId = block.id;
+  history.timestamp = block.timestamp;
 
   if (event.extrinsic) {
     const extrinsic = await getExtrinsic(event.extrinsic);

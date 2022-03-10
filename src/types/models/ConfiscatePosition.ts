@@ -32,6 +32,8 @@ export class ConfiscatePosition implements Entity {
 
     public blockId?: string;
 
+    public timestamp?: Date;
+
     public extrinsicId?: string;
 
 

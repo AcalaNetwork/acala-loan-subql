@@ -18,6 +18,7 @@ export const createTransferLoanHistory = async (
   history.fromId = from;
   history.toId = to;
   history.blockId = block.id;
+  history.timestamp = block.timestamp;
 
   if (event.extrinsic) {
     const extrinshcData = await getExtrinsic(event.extrinsic);

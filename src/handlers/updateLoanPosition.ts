@@ -1,6 +1,6 @@
 import { forceToCurrencyName } from "@acala-network/sdk-core";
 import { SubstrateBlock, SubstrateEvent } from "@subql/types"
-import { getStableCoinCurrency, getStartOfDay, getStartOfHour } from '@acala-network/subql-utils';
+import { getStableCoinCurrency, getStartOfDay, getStartOfHour, getTokenDecimals } from '@acala-network/subql-utils';
 import { getBlock, getAccount, getCollateral, getPriceBundle, getPosition, getHourlyPosition, getDailyPosition, getHourlyCollateral, getDailyCollateral, getExchangeBundle } from "../utils/record";
 import { updateCollateral, updateDailyCollateral, updateDailyPosition, updateHourlyCollateral, updateHourlyPosition, updatePosition, updateParams, createUpdatePositionHistroy, createConfiscatePositionHistory } from ".";
 import { getVolumeUSD } from '../utils/math';
@@ -17,29 +17,30 @@ export const updateLoanPosition = async (
   const startHour = getStartOfHour(timestamp);
   const startDay = getStartOfDay(timestamp);
 
+  // get records
   const block = await getBlock(rawBlock);
   const owner = await getAccount(account.toString());
   const collateral = await getCollateral(collateralName);
-  const stableCoin = await getCollateral(forceToCurrencyName(getStableCoinCurrency(api as any)))
   const priceBundle = await getPriceBundle(collateralName, rawBlock);
   const exchangeBundle = await getExchangeBundle(collateralName, rawBlock);
-  // get houly/daily record
   const hourlyCollateral = await getHourlyCollateral(collateralName, startHour)
   const dailyCollateral = await getDailyCollateral(collateralName, startDay)
   const position = await getPosition(collateral.id, owner.id)
   const hourlyPosition = await getHourlyPosition(collateral.id, owner.id, startHour)
   const dailyPosition = await getDailyPosition(collateral.id, owner.id, startDay)
-  const depositChangedUSD = getVolumeUSD(depositChanged, collateral.decimals, priceBundle.price)
-  const debitChangedUSD = getVolumeUSD(debitChanged, stableCoin.decimals, exchangeBundle.debitExchangeRate)
 
+  const stableCoinDecimals = await getTokenDecimals(api as any, getStableCoinCurrency(api as any));
+  const depositChangedUSD = getVolumeUSD(depositChanged, collateral.decimals, priceBundle.price)
+  const debitChangedUSD = getVolumeUSD(debitChanged, stableCoinDecimals, exchangeBundle.debitExchangeRate)
 
   // update collateral first
   if (shouldUpdatePosition) {
     updateCollateral(collateral, depositChanged, debitChanged);
   }
 
+  // recalculate volume
   const depositVolumeUSD = getVolumeUSD(collateral.depositAmount, collateral.decimals, priceBundle.price)
-  const debitVolumeUSD = getVolumeUSD(collateral.debitAmount, stableCoin.decimals, exchangeBundle.debitExchangeRate)
+  const debitVolumeUSD = getVolumeUSD(collateral.debitAmount, stableCoinDecimals, exchangeBundle.debitExchangeRate)
 
   // update collatearl daily/hourly record
   if (shouldUpdatePosition) {
@@ -76,7 +77,7 @@ export const updateLoanPosition = async (
   }
 
   const depositVolumeUSDInPosition = getVolumeUSD(position.depositAmount, collateral.decimals, priceBundle.price);
-  const debitVolumeUSDInPosition = getVolumeUSD(position.debitAmount, stableCoin.decimals, exchangeBundle.debitExchangeRate);
+  const debitVolumeUSDInPosition = getVolumeUSD(position.debitAmount, stableCoinDecimals, exchangeBundle.debitExchangeRate);
 
   if (shouldUpdatePosition) {
     updateHourlyPosition(
@@ -108,6 +109,7 @@ export const updateLoanPosition = async (
   position.updateAt = block.timestamp;
   position.updateAtBlockId = block.id;
 
+  await owner.save();
   await collateral.save();
   await hourlyCollateral.save();
   await dailyCollateral.save();
@@ -117,6 +119,7 @@ export const updateLoanPosition = async (
 
   return {
     owner,
+    exchangeBundle,
     collateral,
     priceBundle,
     depositChanged,
@@ -129,8 +132,8 @@ export const updateLoanPosition = async (
 export async function handleLoanPositionUpdate (event: SubstrateEvent) {
   const [owner, collateral, _collateralChanged, _debitChanged] = event.event.data;
 
-  const depositChanged = BigInt(_collateralChanged)
-  const debitChanged = BigInt(_debitChanged)
+  const depositChanged = BigInt(_collateralChanged.toString())
+  const debitChanged = BigInt(_debitChanged.toString())
 
   const data = await updateLoanPosition(
     event.block,
@@ -147,15 +150,16 @@ export async function handleLoanPositionUpdate (event: SubstrateEvent) {
     data.debitChanged,
     data.depositChangedUSD,
     data.debitChangedUSD,
-    data.priceBundle.price
+    data.priceBundle.price,
+    data.exchangeBundle.debitExchangeRate
   )
 }
 
 export async function handleConfiscate (event: SubstrateEvent) {
   const [owner, collateral, _collateralChanged, _debitChanged] = event.event.data;
 
-  const depositChanged = -BigInt(_collateralChanged)
-  const debitChanged = -BigInt(_debitChanged)
+  const depositChanged = -BigInt(_collateralChanged.toString())
+  const debitChanged = -BigInt(_debitChanged.toString())
 
   // should update position in the the old version beacuse confiscate will not create PositionUpdated event
   const shouldUpdate = !event.extrinsic.events.find((item) => {

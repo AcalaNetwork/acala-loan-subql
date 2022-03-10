@@ -32,6 +32,8 @@ export class CloseByDex implements Entity {
 
     public price: bigint;
 
+    public debitExchangeRate: bigint;
+
     public blockId: string;
 
     public extrinsicId?: string;

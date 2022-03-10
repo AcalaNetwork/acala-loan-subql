@@ -1,7 +1,7 @@
 import { forceToCurrencyName } from "@acala-network/sdk-core";
 import { AccountId, Balance, CurrencyId } from "@acala-network/types/interfaces";
 import { SubstrateEvent } from "@subql/types";
-import { getAccount, getBlock, getCollateral, getExtrinsic, getLiquidUnsafe, getPriceBundle } from "../utils";
+import { getAccount, getBlock, getCollateral, getExchangeBundle, getExtrinsic, getLiquidUnsafe, getPriceBundle } from "../utils";
 import { getVolumeUSD } from '../utils/math';
 
 export const liquidateUnsafeCDP = async (event: SubstrateEvent) => {
@@ -11,6 +11,7 @@ export const liquidateUnsafeCDP = async (event: SubstrateEvent) => {
   const owner = await getAccount(account.toString());
   const collateral = await getCollateral(forceToCurrencyName(_collateral));
   const priceBundle = await getPriceBundle(collateral.name, event.block);
+  const exchangeRateBundle = await getExchangeBundle(collateral.name, event.block);
   const history = await getLiquidUnsafe(`${block.id}-${event.event.index.toString()}`);
 
   history.ownerId = owner.id;
@@ -20,7 +21,9 @@ export const liquidateUnsafeCDP = async (event: SubstrateEvent) => {
   history.badDebitVolumeUSD = BigInt(bad_debt_value.toString());
   history.liquidationStrategy = liquidation_strategy.toString();
   history.price = priceBundle.price;
+  history.debitExchangeRate = exchangeRateBundle.debitExchangeRate;
   history.blockId = block.id;
+  history.timestamp = block.timestamp;
 
   owner.txCount = owner.txCount + 1;
 
