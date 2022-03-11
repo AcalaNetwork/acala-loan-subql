@@ -28,7 +28,7 @@
   "dependencies": {
     "@acala-network/sdk-core": "^4.0.2-19",
     "@acala-network/sdk-wallet": "^4.0.2-19",
-    "@acala-network/subql-utils": "0.1.16",
+    "@acala-network/subql-utils": "0.1.17",
     "@acala-network/types": "^4.0.2-19",
     "@subql/node": "^0.29.1",
     "dayjs": "^1.10.7"
