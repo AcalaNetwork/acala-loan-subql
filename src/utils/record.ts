@@ -1,3 +1,4 @@
+import { FixedPointNumber } from "@acala-network/sdk-core";
 import { getTokenDecimals, queryPriceFromOracle } from "@acala-network/subql-utils";
 import { SubstrateBlock, SubstrateExtrinsic } from "@subql/types";
 import { queryExchangeRate } from ".";
@@ -263,13 +264,14 @@ export const getPriceBundle = async (token: string, block: SubstrateBlock) => {
   let record = await PriceBundle.get(id);
 
   if (!record) {
-    const price = await queryPriceFromOracle(api as any, block, token);
+    const price = await queryPriceFromOracle(api as any, block, token)
+    .catch(() => Promise.resolve(FixedPointNumber.ZERO));
 
     record = new PriceBundle(id);
 
     record.collateralId = token 
     record.blockId = block.block.header.number.toString();
-    record.price = BigInt(price.toChainData())
+    record.price = BigInt((price || FixedPointNumber.ZERO).toChainData())
 
     await record.save();
   }
