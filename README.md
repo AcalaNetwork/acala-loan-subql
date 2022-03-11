@@ -1,102 +1,222 @@
-# SubQuery - Starter Package
+# @acala-network/acala-loan-subql
+
+## Cookbook
+
+### 1. Query user's position  
+
+#### **Property**
+
+| property | desc |
+| ----- | ----- |
+| ownerId | the position's owner address |
+| callateralId | the position's collateral id |
+| depositAmount | the amount of collateral deposited in the position |
+| debitAmount | the amount of debit issued in the position |
+| updateAt | the timestamp when last update |
+| updateAtBlockId | the block number when last update |
 
 
-The Starter Package is an example that you can use as a starting point for developing your SubQuery project.
-A SubQuery package defines which data The SubQuery will index from the Substrate blockchain, and how it will store it. 
-
-## Preparation
-
-#### Environment
-
-- [Typescript](https://www.typescriptlang.org/) are required to compile project and define types.  
-
-- Both SubQuery CLI and generated Project have dependencies and require [Node](https://nodejs.org/en/).
-     
-
-#### Install the SubQuery CLI
-
-Install SubQuery CLI globally on your terminal by using NPM:
-
-```
-npm install -g @subql/cli
-```
-
-Run help to see available commands and usage provide by CLI
-```
-subql help
-```
-
-## Initialize the starter package
-
-Inside the directory in which you want to create the SubQuery project, simply replace `project-name` with your project name and run the command:
-```
-subql init --starter project-name
-```
-Then you should see a folder with your project name has been created inside the directory, you can use this as the start point of your project. And the files should be identical as in the [Directory Structure](https://doc.subquery.network/directory_structure.html).
-
-Last, under the project directory, run following command to install all the dependency.
-```
-yarn install
-```
-
-
-## Configure your project
-
-In the starter package, we have provided a simple example of project configuration. You will be mainly working on the following files:
-
-- The Manifest in `project.yaml`
-- The GraphQL Schema in `schema.graphql`
-- The Mapping functions in `src/mappings/` directory
-
-For more information on how to write the SubQuery, 
-check out our doc section on [Define the SubQuery](https://doc.subquery.network/define_a_subquery.html) 
-
-#### Code generation
-
-In order to index your SubQuery project, it is mandatory to build your project first.
-Run this command under the project directory.
-
-````
-yarn codegen
-````
-
-## Build the project
-
-In order to deploy your SubQuery project to our hosted service, it is mandatory to pack your configuration before upload.
-Run pack command from root directory of your project will automatically generate a `your-project-name.tgz` file.
-
-```
-yarn build
-```
-
-## Indexing and Query
-
-#### Run required systems in docker
-
-
-Under the project directory run following command:
-
-```
-docker-compose pull && docker-compose up
-```
-#### Query the project
-
-Open your browser and head to `http://localhost:3000`.
-
-Finally, you should see a GraphQL playground is showing in the explorer and the schemas that ready to query.
-
-For the `subql-starter` project, you can try to query with the following code to get a taste of how it works.
-
-````graphql
-{
-  query{
-    starterEntities(first:10){
-      nodes{
-        field1,
-        field2,
-        field3
-      }
+#### **Example**
+```graphql
+query {
+  positions(filter:{ownerId:{equalTo:"25E8NfHMza8XaA7AQvwn1SMFMbk4nZmqmcXF2LbSCurWV2Cr"}}) {
+    nodes {
+      ownerId
+      collateralId
+      depositAmount
+      debitAmount
+      updateAt
+      updateAtBlockId
     }
   }
 }
-````
+```
+
+### 2. Query Collateral Information
+
+#### **Property**
+
+| property | desc |
+| -- | -- |
+| id | the name of the collateral token |
+| decimals | the decimals of the collateral token |
+| depositAmount | the total amount of collateral deposited in the kind of position |
+| debitAmount | the total amount of debit issued in the kind of position |
+| collateralParams | the params config of the kind of posiition |
+| collateralParams.liquidtionRatio | liquidtionRation |
+| collateralParams.liquidationPenalty | liquidationPenalty |
+| collateralParams.maximumTotalDebitValue| maximumTotalDebitValue |
+| collateralParams.requiredCollateralRatio | requiredfCollatearlRatio |
+| collateralParams.interestRatePerSec | interestRatePerSec |
+
+#### **Example**
+```graphql
+query {
+  collaterals(filter:{id:{equalTo:"DOT"}}) {
+    nodes {
+      id
+      decimals
+      depositAmount
+      debitAmount
+      collateralParams {
+        nodes {
+          id,
+          liquidationRatio
+          liquidationPenalty
+          maximumTotalDebitValue
+          requiredCollateralRatio
+          interestRatePerSec
+          updateAt
+          updateAtBlockId
+        }
+      }
+    }
+  }
+} 
+```
+
+### 3. Query Collateral Params History
+
+#### **Property**
+| property | desc |
+| -- | -- |
+| liquidtionRatio | liquidtionRation |
+| liquidationPenalty | liquidationPenalty |
+| maximumTotalDebitValue| maximumTotalDebitValue |
+| requiredCollateralRatio | requiredfCollatearlRatio |
+| interestRatePerSec | interestRatePerSec |
+| startAt | when the params start to use |
+| startAtBlockId | which block height the params start to use |
+| endAt | when the params end to use |
+| endAtBlockId | which block height the params end to use (not include) |
+
+
+#### **Example**
+```graphql
+query {
+ collateralParamsHistories(filter:{collateralId:{equalTo:"DOT"}}) {
+        nodes {
+          id,
+          liquidationRatio
+          liquidationPenalty
+          maximumTotalDebitValue
+          requiredCollateralRatio
+          interestRatePerSec
+          startAt
+          startAtBlockId
+          endAt
+          endAtBlockId
+        }
+      }
+} 
+```
+
+4. Query the UpdatePosition action
+
+#### **Property**
+| property | desc |
+| -- | -- |
+| collateralId | collateral |
+| ownerId | the owner's address |
+| debitAdjustment | debit changed amount |
+| collateralAdjustment | collateral changed amount |
+| debitAdjustmentUSD | debit change value (USD) |
+| collateralAdjustmentUSD | collateral change value (USD) |
+| price | the collateral price at the action |
+| extrinsic | the extrinsic hash |
+| timestamp | the time of the event |
+| blockId | the block id |
+
+#### **Example**
+```graphql
+query {
+  updatePositions(filter:{collateralId:{equalTo:"DOT"}} orderBy:TIMESTAMP_DESC) {
+    nodes {
+      id,
+      collateralId
+      ownerId
+      debitAdjustment
+      collateralAdjustment
+      debitAdjustmentUSD
+      collateralAdjustmentUSD
+      price
+      extrinsicId
+      timestamp
+      blockId
+    }
+  }
+}
+```
+
+4. Query the CloseByDex action
+
+#### **Property**
+| property | desc |
+| -- | -- |
+| collateralId | collateral |
+| ownerId | the owner's address |
+| soldAmount | the amount of sold collaterals |
+| refundAmount | the amount of refunded collateals |
+| debitVolumeUSD | the amount of cleared debits |
+| soldVolumeUSD | the USD vlaue of sold collaterals |
+| refunedVolumeUSD | the USD vlaue of refunded collaterals |
+| price | the collateral price at the action |
+| extrinsic | the extrinsic hash |
+| timestamp | the time of the event |
+| blockId | the block id |
+
+#### **Example**
+```graphql
+query {
+  closeByDexes(filter:{collateralId:{equalTo:"DOT"}} orderBy:TIMESTAMP_DESC) {
+    nodes {
+      id,
+      collateralId
+      ownerId
+      soldAmount
+      debitVolumeUSD
+     refundAmount
+      soldVolumeUSD
+      refundVolumeUSD
+      price
+      extrinsicId
+      timestamp
+      blockId
+    }
+  }
+}
+```
+
+
+### 5.  Query ConfiscatePositions Actions
+| property | desc |
+| -- | -- |
+| collateralId | collateral |
+| ownerId | the owner's address |
+| debitAdjustment | debit changed amount |
+| collateralAdjustment | collateral changed amount |
+| debitAdjustmentUSD | debit change value (USD) |
+| collateralAdjustmentUSD | collateral change value (USD) |
+| price | the collateral price at the action |
+| extrinsic | the extrinsic hash |
+| timestamp | the time of the event |
+| blockId | the block id |
+
+```graphql
+query {
+  confiscatePositions(filter:{collateralId:{equalTo:"DOT"}} orderBy:TIMESTAMP_DESC) {
+    nodes {
+      id,
+      collateralId
+      ownerId
+      collateralAdjustment
+      debitAdjustment
+      collateralAdjustmentUSD
+      debitAdjustmentUSD
+      extrinsicId
+      timestamp
+      blockId
+    }
+  }
+}
+```
