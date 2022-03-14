@@ -28,7 +28,6 @@ export const updateLoanPosition = async (
   const position = await getPosition(collateral.id, owner.id)
   const hourlyPosition = await getHourlyPosition(collateral.id, owner.id, startHour)
   const dailyPosition = await getDailyPosition(collateral.id, owner.id, startDay)
-
   const stableCoinDecimals = await getTokenDecimals(api as any, getStableCoinCurrency(api as any));
   const depositChangedUSD = getVolumeUSD(depositChanged, collateral.decimals, priceBundle.price)
   const debitChangedUSD = getVolumeUSD(debitChanged, stableCoinDecimals, exchangeBundle.debitExchangeRate)
