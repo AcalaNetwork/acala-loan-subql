@@ -1,4 +1,4 @@
-import { FixedPointNumber } from "@acala-network/sdk-core";
+import { FixedPointNumber, getCurrencyObject } from "@acala-network/sdk-core";
 import { getTokenDecimals, queryPriceFromOracle } from "@acala-network/subql-utils";
 import { SubstrateBlock, SubstrateExtrinsic } from "@subql/types";
 import { queryExchangeRate } from ".";
@@ -285,12 +285,14 @@ export const getCollateralParams = async (id: string) => {
   if (!record) {
     record = new CollateralParams(id);
 
+    const params = await api.query.cdpEngine.collateralParams(getCurrencyObject(id)) as any;
+
     record.collateralId = id;
-    record.maximumTotalDebitValue = BigInt(0);
-    record.interestRatePerSec = BigInt(0);
-    record.liquidationRatio = BigInt(0);
-    record.liquidationPenalty = BigInt(0);
-    record.requiredCollateralRatio = BigInt(0);
+    record.maximumTotalDebitValue = BigInt(params.maximumTotalDebitValue.toString());
+    record.interestRatePerSec = BigInt(params.interestRatePerSec.toString());
+    record.liquidationRatio = BigInt(params.liquidationRatio.toString());
+    record.liquidationPenalty = BigInt(params.liquidationPenalty.toString());
+    record.requiredCollateralRatio = BigInt(params.requiredCollateralRatio.toString());
     record.updateAtBlockId = '1';
     record.updateAt = new Date(0);
   }
