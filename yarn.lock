@@ -63,10 +63,10 @@
     lodash "^4.17.20"
     rxjs "^7.4.0"
 
-"@acala-network/subql-utils@0.1.17":
-  version "0.1.17"
-  resolved "https://registry.yarnpkg.com/@acala-network/subql-utils/-/subql-utils-0.1.17.tgz#6dccfb3398a6d084d1b97f82a57358a6d7d47803"
-  integrity sha512-LvX8vf5c15vESJrNoy+kFRtaVPI6tyhtGaZqyCUq5FhSO9ccMh8iK3xQGmnkiLtYS1dde8ctq/UfejNUoZQMNg==
+"@acala-network/subql-utils@^0.1.18":
+  version "0.1.18"
+  resolved "https://registry.yarnpkg.com/@acala-network/subql-utils/-/subql-utils-0.1.18.tgz#1bb9d97474f798dad93cff3d1551f87b33fab6c2"
+  integrity sha512-QObcsBjqQ2OzIfaVoD6yfqTz2MvWs5860PnuO3Vyxt9eA8KorwNZe+1TWO+9t1OijJyPsWK8LAsfvlFbrqXmbg==
   dependencies:
     "@acala-network/api" "^4.0.2-18"
     "@acala-network/sdk" "^4.0.2-18"
