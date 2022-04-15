@@ -12,7 +12,7 @@ export const createTransferLoanHistory = async (
 ) => {
   const tokenName = forceToCurrencyName(token);
   const block = await getBlock(event.block);
-  const history = await getTransferPosition(`${block.id}-${event.event.index.toString()}`);
+  const history = await getTransferPosition(`${block.id}-${event.idx.toString()}`);
 
   history.collateralId = tokenName;
   history.fromId = from;

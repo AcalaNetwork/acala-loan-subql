@@ -74,7 +74,7 @@ export const createUpdatePositionHistroy = async (
 ) => {
   const collateral = await getCollateral(collateralName);
   const block = await getBlock(event.block);
-  const history = await getUpdatePosition(`${block.id}-${event.event.index.toString()}`);
+  const history = await getUpdatePosition(`${block.id}-${event.idx.toString()}`);
 
   history.ownerId = owner.id;
   history.collateralId = collateral.id;
@@ -105,7 +105,7 @@ export const createConfiscatePositionHistory = async (
   debitChangedUSD: bigint
 ) => {
   const block = await getBlock(event.block);
-  const historyId = `${block.id}-${event.event.index.toString()}`;
+  const historyId = `${block.id}-${event.idx.toString()}`;
   const history = await getConfiscatePosition(historyId);
 
   history.ownerId = owner.id

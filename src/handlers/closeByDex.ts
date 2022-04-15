@@ -12,7 +12,7 @@ export const closeByDex = async (event: SubstrateEvent) => {
   const block = await getBlock(event.block);
   const priceBundle = await getPriceBundle(token.name, event.block);
   const exchangeRateBundle = await getExchangeBundle(token.name, event.block);
-  const history = await getCloseByDex(`${block.id}-${event.event.index.toString()}`);
+  const history = await getCloseByDex(`${block.id}-${event.idx.toString()}`);
 
   history.ownerId = owner.id;
   history.collateralId = token.name;

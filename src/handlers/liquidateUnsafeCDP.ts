@@ -13,7 +13,7 @@ export const liquidateUnsafeCDP = async (event: SubstrateEvent) => {
   const collateral = await getCollateral(forceToCurrencyName(_collateral));
   const priceBundle = await getPriceBundle(collateral.name, event.block);
   const exchangeRateBundle = await getExchangeBundle(collateral.name, event.block);
-  const history = await getLiquidUnsafe(`${block.id}-${event.event.index.toString()}`);
+  const history = await getLiquidUnsafe(`${block.id}-${event.idx.toString()}`);
   const stableCoinDecimals = await getTokenDecimals(api as any, getStableCoinCurrency(api as any));
 
   history.ownerId = owner.id;
