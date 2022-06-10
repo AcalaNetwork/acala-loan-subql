@@ -1,5 +1,6 @@
 import { FixedPointNumber, getCurrencyObject } from "@acala-network/sdk-core";
 import { getTokenDecimals, queryPriceFromOracle } from "@acala-network/subql-utils";
+import { Option } from "@polkadot/types"
 import { SubstrateBlock, SubstrateExtrinsic } from "@subql/types";
 import { queryExchangeRate } from ".";
 import {
@@ -71,10 +72,10 @@ export const getExtrinsic = async (extrinsic: SubstrateExtrinsic) => {
 
     const sender = await getAccount(extrinsic.extrinsic.signer.toString());
 
-    record.hash = id 
-    record.blockId = extrinsic.block.block.header.number.toString(); 
-    record.method = extrinsic.extrinsic.method.method; 
-    record.section = extrinsic.extrinsic.method.section; 
+    record.hash = id
+    record.blockId = extrinsic.block.block.header.number.toString();
+    record.method = extrinsic.extrinsic.method.method;
+    record.section = extrinsic.extrinsic.method.section;
     record.senderId = sender.id;
     record.raw = extrinsic.extrinsic.toHex();
 
@@ -87,7 +88,7 @@ export const getExtrinsic = async (extrinsic: SubstrateExtrinsic) => {
 export const getAccount = async (address: string) => {
   let record = await Account.get(address);
 
-  if (!record ) {
+  if (!record) {
     record = new Account(address);
 
     record.address = address;
@@ -113,7 +114,7 @@ export const getCollateral = async (token: string) => {
     record.txCount = 0;
 
     await record.save()
-  } 
+  }
 
   return record;
 }
@@ -265,11 +266,11 @@ export const getPriceBundle = async (token: string, block: SubstrateBlock) => {
 
   if (!record) {
     const price = await queryPriceFromOracle(api as any, block, token)
-    .catch(() => Promise.resolve(FixedPointNumber.ZERO));
+      .catch(() => Promise.resolve(FixedPointNumber.ZERO));
 
     record = new PriceBundle(id);
 
-    record.collateralId = token 
+    record.collateralId = token
     record.blockId = block.block.header.number.toString();
     record.price = BigInt((price || FixedPointNumber.ZERO).toChainData())
 
@@ -286,13 +287,12 @@ export const getCollateralParams = async (id: string) => {
     record = new CollateralParams(id);
 
     const params = await api.query.cdpEngine.collateralParams(getCurrencyObject(id)) as any;
-
     record.collateralId = id;
-    record.maximumTotalDebitValue = BigInt(params.maximumTotalDebitValue.toString());
-    record.interestRatePerSec = BigInt(params.interestRatePerSec.toString());
-    record.liquidationRatio = BigInt(params.liquidationRatio.toString());
-    record.liquidationPenalty = BigInt(params.liquidationPenalty.toString());
-    record.requiredCollateralRatio = BigInt(params.requiredCollateralRatio.toString());
+    record.maximumTotalDebitValue = BigInt(params?.maximumTotalDebitValue?.toString() || params.unwrapOrDefault().maximumTotalDebitValue.toString());
+    record.interestRatePerSec = BigInt(params?.interestRatePerSec?.toString() || params.unwrapOrDefault().interestRatePerSec.toString());
+    record.liquidationRatio = BigInt(params?.liquidationRatio?.toString() || params.unwrapOrDefault().liquidationRatio.toString());
+    record.liquidationPenalty = BigInt(params?.liquidationPenalty?.toString() || params.unwrapOrDefault().liquidationPenalty.toString());
+    record.requiredCollateralRatio = BigInt(params?.requiredCollateralRatio?.toString() || params.unwrapOrDefault().requiredCollateralRatio.toString());
     record.updateAtBlockId = '1';
     record.updateAt = new Date(0);
   }
