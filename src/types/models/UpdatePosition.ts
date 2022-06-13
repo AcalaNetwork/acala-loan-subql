@@ -32,6 +32,8 @@ export class UpdatePosition implements Entity {
 
     public debitExchangeRate: bigint;
 
+    public isDerived: boolean;
+
     public blockId: string;
 
     public extrinsicId?: string;

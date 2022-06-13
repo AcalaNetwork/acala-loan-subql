@@ -1,8 +1,8 @@
 import { SubstrateEvent } from "@subql/types";
-import { Account, Block, Collateral, DailyPosition, HourlyPosition, Position} from "../types";
+import { Account, Block, Collateral, DailyPosition, HourlyPosition, Position } from "../types";
 import { getBlock, getCollateral, getConfiscatePosition, getExtrinsic, getUpdatePosition } from "../utils/record";
 
-export const updatePosition= (
+export const updatePosition = (
   position: Position,
   block: Block,
   depositChanged: bigint,
@@ -72,6 +72,22 @@ export const createUpdatePositionHistroy = async (
   price: bigint,
   debitExchangeRate: bigint
 ) => {
+  let isDerived = false;
+  event.extrinsic.events.forEach(event => {
+    const seciton = event.event.section;
+    const method = event.event.method;
+    if(seciton === 'cdpEngine' && method === 'CloseCDPInDebitByDEX') {
+      isDerived = true;
+    }
+    
+    if (seciton === 'cdpEngine' && method === 'LiquidateUnsafeCDP') {
+      isDerived = true;
+    }
+
+    if(seciton === 'loans' && method === 'ConfiscateCollateralAndDebit') {
+      isDerived = true;
+    }
+  })
   const collateral = await getCollateral(collateralName);
   const block = await getBlock(event.block);
   const history = await getUpdatePosition(`${block.id}-${event.idx.toString()}`);
@@ -86,6 +102,7 @@ export const createUpdatePositionHistroy = async (
   history.debitExchangeRate = debitExchangeRate;
   history.blockId = block.id;
   history.timestamp = block.timestamp;
+  history.isDerived = isDerived;
 
   if (event.extrinsic) {
     const extrinsic = await getExtrinsic(event.extrinsic);

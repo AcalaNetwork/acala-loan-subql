@@ -222,6 +222,8 @@ type UpdatePosition @entity {
   price: BigInt! # price snapshot
   debitExchangeRate: BigInt! # debit exchange rate snapshot
 
+  isDerived: Boolean! # is derived from event
+
   block: Block!
   extrinsic: Extrinsic
   timestamp: Date!
