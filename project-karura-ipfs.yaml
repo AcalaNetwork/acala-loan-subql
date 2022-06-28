@@ -1,0 +1,77 @@
+specVersion: 1.0.0
+name: karura-tokens
+version: 1.0.0
+description: 'statistics tokens data of karura network'
+repository: 'https://github.com/AcalaNetwork/acala-tokens-subql'
+runner:
+  node:
+    name: "@subql/node"
+    version: "1.2.1"
+  query:
+    name: "@subql/query"
+    version: "1.2.0"
+schema: 
+    file: ./schema.graphql
+network:
+  chainId: '0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b'
+  dictionary: https://api.subquery.network/sq/subquery/karura-dictionary
+  endpoint: wss://karura.api.onfinality.io/public-ws
+  chaintypes:
+    file: './src/chain-types.js'
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 1
+    mapping:
+      file: "./dist/index.js"
+      handlers:
+        - handler: handleParamsUpdated
+          kind: substrate/EventHandler
+          filter:
+            module: cdpEngine
+            method: InterestRatePerSecUpdated
+        - handler: handleParamsUpdated
+          kind: substrate/EventHandler
+          filter:
+            module: cdpEngine
+            method: LiquidationRatioUpdated
+        - handler: handleParamsUpdated
+          kind: substrate/EventHandler
+          filter:
+            module: cdpEngine
+            method: LiquidationPenaltyUpdated
+        - handler: handleParamsUpdated
+          kind: substrate/EventHandler
+          filter:
+            module: cdpEngine
+            method: RequiredCollateralRatioUpdated
+        - handler: handleParamsUpdated
+          kind: substrate/EventHandler
+          filter:
+            module: cdpEngine
+            method: MaximumTotalDebitValueUpdated
+          
+        - handler: handleLiquidateUnsafeCDP
+          kind: substrate/EventHandler
+          filter:
+            module: cdpEngine
+            method: LiquidateUnsafeCDP
+        - handler: handleCloseCDPInDebitByDEX
+          kind: substrate/EventHandler
+          filter:
+            module: cdpEngine
+            method: CloseCDPInDebitByDEX
+        - handler: handlePositionUpdated
+          kind: substrate/EventHandler
+          filter:
+            module: loans
+            method: PositionUpdated
+        - handler: handleConfiscateCollateralAndDebit
+          kind: substrate/EventHandler
+          filter:
+            module: loans
+            method: ConfiscateCollateralAndDebit
+        - handler: handleTransferLoan
+          kind: substrate/EventHandler
+          filter:
+            module: loans
+            method: TransferLoan
