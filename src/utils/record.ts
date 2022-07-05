@@ -401,9 +401,9 @@ export const getTransferPosition = async (id: string) => {
     record.blockId = '1';
     record.extrinsicId = '';
     record.timestamp = new Date()
-  } else {
-    return record;
   }
+
+  return record;
 }
 
 export const getConfiscatePosition = async (id: string) => {
