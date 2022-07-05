@@ -30,6 +30,8 @@ export class ConfiscatePosition implements Entity {
 
     public debitAdjustmentUSD?: bigint;
 
+    public debitPool?: bigint;
+
     public blockId?: string;
 
     public timestamp?: Date;

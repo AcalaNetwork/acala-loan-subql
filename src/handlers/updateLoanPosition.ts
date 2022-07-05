@@ -165,6 +165,15 @@ export async function handleConfiscate (event: SubstrateEvent) {
     return item.event.section === 'loans' && item.event.method === 'PositionUpdated';
   })
 
+  let debitPool
+
+  try {
+    const _pool = await api.query.cdpTreasury.debitPool();
+    debitPool = BigInt(_pool.toString())
+  } catch (error) {
+    debitPool = BigInt(0)
+  }
+
   const data = await updateLoanPosition(
     event.block,
     owner.toString(),
@@ -181,6 +190,7 @@ export async function handleConfiscate (event: SubstrateEvent) {
     data.depositChanged,
     data.debitChanged,
     data.depositChangedUSD,
-    data.debitChangedUSD
+    data.debitChangedUSD,
+    debitPool
   )
 }

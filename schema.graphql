@@ -294,6 +294,8 @@ type ConfiscatePosition @entity {
   collateralAdjustmentUSD: BigInt
   debitAdjustmentUSD: BigInt
 
+  debitPool: BigInt
+
   block: Block
   timestamp: Date
   extrinsic: Extrinsic

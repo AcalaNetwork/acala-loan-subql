@@ -119,7 +119,8 @@ export const createConfiscatePositionHistory = async (
   depositChanged: bigint,
   debitChanged: bigint,
   depositChangedUSD: bigint,
-  debitChangedUSD: bigint
+  debitChangedUSD: bigint,
+  debitPool: bigint
 ) => {
   const block = await getBlock(event.block);
   const historyId = `${block.id}-${event.idx.toString()}`;
@@ -133,6 +134,7 @@ export const createConfiscatePositionHistory = async (
   history.debitAdjustmentUSD = debitChangedUSD;
   history.blockId = block.id;
   history.timestamp = block.timestamp;
+  history.debitPool = debitPool
 
 
   if (event.extrinsic) {
