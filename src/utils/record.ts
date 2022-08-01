@@ -20,6 +20,7 @@ import {
   ConfiscatePosition,
   CloseByDex,
 } from "../types";
+import { getDebitPool } from './getDebitPool';
 
 export const getBlock = async (block: SubstrateBlock) => {
   const id = block.block.header.number.toString();
@@ -35,6 +36,7 @@ export const getBlock = async (block: SubstrateBlock) => {
     record.hash = block.hash.toString();
     record.number = BigInt(id);
     record.timestamp = block.timestamp;
+    record.debitPool = await getDebitPool();
 
     // never change after save
     await record.save()

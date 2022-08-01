@@ -22,6 +22,8 @@ export class Block implements Entity {
 
     public timestamp: Date;
 
+    public debitPool?: bigint;
+
 
     async save(): Promise<void>{
         let id = this.id;

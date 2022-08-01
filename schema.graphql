@@ -4,6 +4,8 @@ type Block @entity {
   hash: String!
   number: BigInt!
   timestamp: Date!
+
+  debitPool: BigInt
 }
 
 type Extrinsic @entity {
