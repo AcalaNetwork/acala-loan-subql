@@ -20,7 +20,7 @@ export const liquidateUnsafeCDP = async (event: SubstrateEvent) => {
   history.collateralId = collateral.id;
   history.collateralAmount = BigInt(collateral_amount.toString());
   history.collateralVolumeUSD = getVolumeUSD(history.collateralAmount, collateral.decimals, priceBundle.price)
-  history.badDebitVolumeUSD = getVolumeUSD(BigInt(bad_debt_value.toString()), stableCoinDecimals, BigInt(1 ** 18));
+  history.badDebitVolumeUSD = getVolumeUSD(BigInt(bad_debt_value.toString()), stableCoinDecimals, BigInt(10 ** 18));
   history.liquidationStrategy = liquidation_strategy.toString();
   history.price = priceBundle.price;
   history.debitExchangeRate = exchangeRateBundle.debitExchangeRate;
