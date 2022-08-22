@@ -333,14 +333,12 @@ export const getUpdatePosition = async (id: string) => {
     record.ownerId = '';
     record.collateralId = '';
     record.blockId = '1';
-    record.extrinsicId = '';
     record.collateralAdjustment = BigInt(0);
     record.debitAdjustment = BigInt(0);
     record.collateralAdjustmentUSD = BigInt(0);
     record.debitAdjustmentUSD = BigInt(0);
     record.price = BigInt(0);
     record.debitExchangeRate = BigInt(0)
-    record.extrinsicId = ''
     record.timestamp = new Date(0)
   }
 

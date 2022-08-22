@@ -108,8 +108,8 @@ export const createUpdatePositionHistroy = async (
         isDerived = true;
       }
     })
-    history.isDerived = isDerived;
   }
+  history.isDerived = isDerived;
 
   await history.save();
 }
