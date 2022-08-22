@@ -73,21 +73,6 @@ export const createUpdatePositionHistroy = async (
   debitExchangeRate: bigint
 ) => {
   let isDerived = false;
-  event.extrinsic.events.forEach(event => {
-    const seciton = event.event.section;
-    const method = event.event.method;
-    if(seciton === 'cdpEngine' && method === 'CloseCDPInDebitByDEX') {
-      isDerived = true;
-    }
-    
-    if (seciton === 'cdpEngine' && method === 'LiquidateUnsafeCDP') {
-      isDerived = true;
-    }
-
-    if(seciton === 'loans' && method === 'ConfiscateCollateralAndDebit') {
-      isDerived = true;
-    }
-  })
   const collateral = await getCollateral(collateralName);
   const block = await getBlock(event.block);
   const history = await getUpdatePosition(`${block.id}-${event.idx.toString()}`);
@@ -102,11 +87,28 @@ export const createUpdatePositionHistroy = async (
   history.debitExchangeRate = debitExchangeRate;
   history.blockId = block.id;
   history.timestamp = block.timestamp;
-  history.isDerived = isDerived;
 
   if (event.extrinsic) {
     const extrinsic = await getExtrinsic(event.extrinsic);
     history.extrinsicId = extrinsic.id;
+
+    event.extrinsic.events.forEach(event => {
+      logger.info(JSON.stringify(event))
+      const seciton = event.event.section;
+      const method = event.event.method;
+      if(seciton === 'cdpEngine' && method === 'CloseCDPInDebitByDEX') {
+        isDerived = true;
+      }
+      
+      if (seciton === 'cdpEngine' && method === 'LiquidateUnsafeCDP') {
+        isDerived = true;
+      }
+
+      if(seciton === 'loans' && method === 'ConfiscateCollateralAndDebit') {
+        isDerived = true;
+      }
+    })
+    history.isDerived = isDerived;
   }
 
   await history.save();
