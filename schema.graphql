@@ -97,8 +97,8 @@ type DailyCollateral @entity {
   debitChangedUSD: BigInt!
   debitExchangeRate: BigInt!
 
-  latestBlock: Block!
-  latestPrice: BigInt!
+  latestBlock: Block
+  latestPrice: BigInt
   timestamp: Date!
 }
 
@@ -153,8 +153,8 @@ type DailyPosition @entity {
   debitChangedUSD: BigInt!
   debitExchangeRate: BigInt!
 
-  latestBlock: Block!
-  latestPrice: BigInt!
+  latestBlock: Block
+  latestPrice: BigInt
   
   timestamp: Date!
   txCount: Int!
