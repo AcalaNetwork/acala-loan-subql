@@ -63,7 +63,8 @@ export const updateLoanPosition = async (
       depositChanged,
       debitChanged,
       depositChangedUSD,
-      debitChangedUSD
+      debitChangedUSD,
+      priceBundle
     );
 
     // update user position
@@ -100,7 +101,8 @@ export const updateLoanPosition = async (
       depositChanged,
       debitChanged,
       depositChangedUSD,
-      debitChangedUSD
+      debitChangedUSD,
+      priceBundle
     )
   }
 

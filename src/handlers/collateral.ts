@@ -1,4 +1,4 @@
-import { Collateral, DailyCollateral, HourlyCollateral } from "../types";
+import { Collateral, DailyCollateral, HourlyCollateral, PriceBundle } from "../types";
 
 export const updateCollateral = (
   collateral: Collateral,
@@ -42,7 +42,8 @@ export const updateDailyCollateral = (
   depositChanged: bigint,
   debitChanged: bigint,
   depositChangedUSD: bigint,
-  debitChangedUSD: bigint
+  debitChangedUSD: bigint,
+  priceBundle: PriceBundle
 ) => {
   daily.depositAmount = collateral.depositAmount;
   daily.debitAmount = collateral.debitAmount;
@@ -53,5 +54,7 @@ export const updateDailyCollateral = (
   daily.depositChangedUSD = daily.depositChangedUSD + depositChangedUSD
   daily.debitChangedUSD = daily.debitChangedUSD + debitChangedUSD
   daily.debitExchangeRate = exchangeRate;
+  daily.latestPrice = priceBundle.price;
+  daily.latestBlockId = priceBundle.blockId;
   daily.txCount = daily.txCount + 1;
 }

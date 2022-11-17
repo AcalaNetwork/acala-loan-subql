@@ -38,6 +38,10 @@ export class DailyPosition implements Entity {
 
     public debitExchangeRate: bigint;
 
+    public latestBlockId: string;
+
+    public latestPrice: bigint;
+
     public timestamp: Date;
 
     public txCount: number;
@@ -74,6 +78,13 @@ export class DailyPosition implements Entity {
     static async getByCollateralId(collateralId: string): Promise<DailyPosition[] | undefined>{
       
       const records = await store.getByField('DailyPosition', 'collateralId', collateralId);
+      return records.map(record => DailyPosition.create(record as DailyPositionProps));
+      
+    }
+
+    static async getByLatestBlockId(latestBlockId: string): Promise<DailyPosition[] | undefined>{
+      
+      const records = await store.getByField('DailyPosition', 'latestBlockId', latestBlockId);
       return records.map(record => DailyPosition.create(record as DailyPositionProps));
       
     }

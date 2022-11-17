@@ -1,5 +1,5 @@
 import { SubstrateEvent } from "@subql/types";
-import { Account, Block, Collateral, DailyPosition, HourlyPosition, Position } from "../types";
+import { Account, Block, Collateral, DailyPosition, HourlyPosition, Position, PriceBundle } from "../types";
 import { getBlock, getCollateral, getConfiscatePosition, getExtrinsic, getUpdatePosition } from "../utils/record";
 
 export const updatePosition = (
@@ -47,7 +47,8 @@ export const updateDailyPosition = (
   depositChanged: bigint,
   debitChanged: bigint,
   depositChangedUSD: bigint,
-  debitChangedUSD: bigint
+  debitChangedUSD: bigint,
+  priceBundle: PriceBundle
 ) => {
   dailyPosition.depositAmount = position.depositAmount;
   dailyPosition.debitAmount = position.debitAmount;
@@ -59,6 +60,8 @@ export const updateDailyPosition = (
   dailyPosition.depositChangedUSD = dailyPosition.depositChangedUSD + depositChangedUSD;
   dailyPosition.debitChangedUSD = dailyPosition.debitChangedUSD + debitChangedUSD;
   dailyPosition.txCount = dailyPosition.txCount + 1;
+  dailyPosition.latestPrice = priceBundle.price;
+  dailyPosition.latestBlockId = priceBundle.blockId;
 }
 
 export const createUpdatePositionHistroy = async (
